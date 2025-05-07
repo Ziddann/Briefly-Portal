@@ -1,19 +1,18 @@
 import React from 'react';
+import '../styles/Navbar.css';
 
-const Navbar = () => {
+function Navbar() {
   return (
-    <nav className="bg-blue-600 text-white p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">Portal Berita</h1>
-        <ul className="flex gap-4">
-          <li><a href="#" className="hover:underline">Home</a></li>
-          <li><a href="#" className="hover:underline">Kategori</a></li>
-          <li><a href="#" className="hover:underline">Login</a></li>
-        </ul>
+    <nav className="navbar">
+      <div className="logo">BrieflyPortal</div>
+      <div className="nav-links">
+        <a href="#">Home</a>
+        <a href="#">Berita</a>
+        <a href="#">Kategori</a>
+        <a href="#">Logout</a>
       </div>
     </nav>
   );
-};
+}
 
 export default Navbar;
-EOL
