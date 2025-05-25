@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom'; // tambahkan Link
 import '../styles/NewsDetail.css';
 
 function NewsDetail() {
@@ -50,17 +50,19 @@ function NewsDetail() {
         <h3>Language</h3>
         <ul>
           <li>English</li>
-          <li>Spanish</li>
-          <li>French</li>
+          <li>Indonesia</li>
         </ul>
       </aside>
 
       <main className="news-content">
+        {/* Tombol Close (×) */}
+        <Link to="/" className="close-button" title="Back to Home">×</Link>
+
         <input className="search-bar" placeholder="Search news..." />
 
         <div className="news-article">
           {news.image && (
-            <img className="news-image" src={news.image} alt="News Visual" />
+            <img className="news-image" src="/news.png" alt="News Visual" />
           )}
           <h2 className="news-title">{news.title}</h2>
           <p className="news-meta">

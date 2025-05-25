@@ -1,0 +1,74 @@
+/* Container utama halaman bookmark */
+.bookmark-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem 2rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  }
+  
+  /* Judul halaman */
+  .bookmark-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    color: #333;
+    border-bottom: 3px solid orange;
+    padding-bottom: 0.5rem;
+  }
+  
+  /* Daftar kartu berita bookmark */
+  .bookmark-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  
+  /* Card berita bookmark horizontal */
+  .bookmark-card {
+    display: flex;
+    gap: 1rem;
+    background-color: #fafafa;
+    padding: 1rem;
+    border-radius: 6px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  .bookmark-card:hover {
+    background-color: #fff3e0;
+  }
+  
+  /* Thumbnail gambar */
+  .bookmark-thumb {
+    width: 120px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+  
+  /* Info teks berita */
+  .bookmark-info {
+    flex: 1;
+  }
+  
+  /* Judul berita */
+  .bookmark-title-card {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+    line-height: 1.3;
+  }
+  
+  /* Tanggal berita */
+  .bookmark-date {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #777;
+  }
+  

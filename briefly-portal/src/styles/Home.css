@@ -1,18 +1,81 @@
-.home-layout {
-    background-color: #f8f8f8;
-    min-height: 100vh;
-  }
-  
-  .main-content {
-    display: flex;
-    gap: 1rem;
-    padding: 1rem;
-  }
-  
-  .news-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-  
+/* Container utama layout: flex row */
+.home-content {
+  display: flex;
+  gap: 2rem;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Kiri: konten berita utama */
+.main-news {
+  flex: 3;
+}
+
+/* Setiap berita utama tampil card */
+.main-news-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: box-shadow 0.3s ease, background-color 0.3s ease;
+  cursor: pointer;
+  padding: 1rem;
+  display: block;
+}
+
+/* Hover efek dengan border untuk visual debug */
+.main-news-card:hover {
+  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background-color: #fffaf0; /* warna latar lebih terang */
+  border: 2px solid orange;
+}
+
+/* Gambar berita utama full lebar */
+/* Hanya pada gambar di main-news-card saja, pointer-events none */
+.main-news-card .main-news-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;  /* agar hover di parent tetap terdeteksi */
+}
+
+/* Isi judul dan deskripsi */
+.main-news-card h2 {
+  font-size: 1.5rem;
+  margin: 1rem 1.2rem 0.5rem;
+}
+
+.main-news-card p {
+  margin: 0 1.2rem 1rem;
+  line-height: 1.4;
+  color: #444;
+}
+
+/* Tanggal berita */
+.news-date {
+  margin: 0 1.2rem 1.2rem;
+  font-size: 0.85rem;
+  color: #999;
+  font-style: italic;
+}
+
+/* Kanan: trending sidebar */
+.trending-section {
+  flex: 1;
+  padding-left: 1rem;
+  border-left: 1px solid #eee;
+  background: #fafafa;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.05);
+}
+
+/* Judul sidebar */
+.trending-section h3 {
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  border-bottom: 3px solid orange;
+  padding-bottom: 0.4rem;
+  font-weight: 700;
+  color: #333;
+}
