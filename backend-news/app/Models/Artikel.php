@@ -1,0 +1,8 @@
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Artikel extends Model
+{
+    protected $fillable = ['judul', 'isi']; // sesuaikan dengan kolom yang ada di database
+}
