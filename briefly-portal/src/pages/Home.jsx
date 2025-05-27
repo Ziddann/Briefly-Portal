@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TrendingSidebar from '../components/TrendingSidebar';
+import Footer from '../components/Footer';
 import '../styles/Home.css';
 
 function Home() {
@@ -49,7 +50,9 @@ function Home() {
           ))}
         </div>
         <TrendingSidebar />
+        
       </div>
+      <Footer />
     </div>
   );
 }

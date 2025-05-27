@@ -6,6 +6,8 @@ import NewsDetail from './pages/NewsDetail';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Bookmark from './pages/Bookmark';
+import Footer from './components/Footer';
+import Navbar from './components/Navbar';
 
 function App() {
   return (

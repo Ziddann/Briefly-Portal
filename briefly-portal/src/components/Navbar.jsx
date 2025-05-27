@@ -13,6 +13,14 @@ function Navbar() {
     setSidebarOpen(false);
   };
 
+  // Fungsi untuk scroll ke atas dengan animasi
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // Animasi scroll ke atas
+    });
+  };
+
   return (
     <>
       <nav className="navbar">
@@ -20,13 +28,17 @@ function Navbar() {
           <button className="sidebar-toggle" onClick={() => setSidebarOpen(true)}>
             ☰
           </button>
-          <Link to="/" className="logo-link">BrieflyNews</Link>
+          {/* Tombol BrieflyNews dengan scroll to top */}
+          <Link to="/" className="logo-link" onClick={scrollToTop}>
+            BrieflyNews
+          </Link>
         </div>
 
         <div className="navbar-right">
           <input type="text" className="search-input" placeholder="Search..." />
-          <Link to="/" className="nav-item">Home</Link>
-          <Link to="/bookmark" className="nav-item">Bookmark</Link> 
+          {/* Tombol Home dengan scroll to top */}
+          <Link to="/" className="nav-item" onClick={scrollToTop}>Home</Link>
+          <Link to="/bookmark" className="nav-item">Bookmark</Link>
           <div className="dropdown" onClick={() => setDropdownOpen(!dropdownOpen)}>
             <span className="nav-item dropdown-toggle">Kategori ▾</span>
             {dropdownOpen && (
