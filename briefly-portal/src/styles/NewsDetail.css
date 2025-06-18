@@ -116,8 +116,11 @@
 .comment-form {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-bottom: 1rem;
 }
+
 
 .avatar {
   width: 40px;
@@ -136,15 +139,16 @@
 }
 
 .comment-button {
-  background-color: orange;
+  background-color: #ffa500;
   border: none;
   color: white;
-  padding: 0.6rem 1.5rem;
-  border-radius: 25px;
-  font-weight: 700;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  font-weight: bold;
+  white-space: nowrap;
 }
+
 
 .comment-button:hover {
   background-color: #e67e22;

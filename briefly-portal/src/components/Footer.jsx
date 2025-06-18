@@ -1,6 +1,7 @@
 import React from 'react';
 import { FaFacebook, FaInstagram, FaTwitter, FaLinkedin, FaEnvelope, FaPhone } from 'react-icons/fa';
 import '../styles/Footer.css';
+import '../styles/responsive.css';
 
 function Footer() {
   return (

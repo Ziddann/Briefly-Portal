@@ -4,6 +4,7 @@ import Navbar from '../components/Navbar';
 import TrendingSidebar from '../components/TrendingSidebar';
 import Footer from '../components/Footer';
 import '../styles/Home.css';
+import '../styles/responsive.css';
 
 function Home() {
   const newsList = [

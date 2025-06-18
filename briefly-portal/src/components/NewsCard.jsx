@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import '../styles/NewsCard.css';
+import '../styles/responsive.css';
 
 function NewsCard({ id, title, date, imageUrl }) {
   return (

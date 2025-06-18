@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Register.css';
 
 function Register() {
@@ -19,23 +20,34 @@ function Register() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi password dan konfirmasi password
     if (form.password !== form.confirmPassword) {
       alert("Password and Confirm Password do not match!");
       return;
     }
 
-    console.log('Registering:', form);
-    // Tambahkan logika pengiriman data ke backend di sini jika perlu
+    try {
+      const response = await axios.post('http://localhost:8000/api/register', {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        password_confirmation: form.confirmPassword,
+      });
+
+      console.log('Register success:', response.data);
+      alert('Registrasi berhasil! Silakan login.');
+      // Redirect atau kosongkan form jika perlu
+    } catch (error) {
+      console.error('Register error:', error.response?.data);
+      alert('Registrasi gagal. Silakan periksa kembali.');
+    }
   };
 
   return (
     <div className="register-container">
       <form className="register-box" onSubmit={handleSubmit}>
-        {/* Tautan ke halaman home */}
         <Link to="/" className="register-title">BrieflyNews</Link>
 
         <label>Full Name</label>
@@ -101,3 +113,4 @@ function Register() {
 }
 
 export default Register;
+ 

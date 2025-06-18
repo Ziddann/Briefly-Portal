@@ -43,10 +43,10 @@ function Navbar() {
             <span className="nav-item dropdown-toggle">Kategori ▾</span>
             {dropdownOpen && (
               <div className="dropdown-menu">
-                <a href="#" className="dropdown-item">Teknologi</a>
-                <a href="#" className="dropdown-item">Politik</a>
-                <a href="#" className="dropdown-item">Olahraga</a>
-                <a href="#" className="dropdown-item">Hiburan</a>
+                <Link to="/kategori/teknologi" className="dropdown-item">Teknologi</Link>
+                <Link to="/kategori/politik" className="dropdown-item">Politik</Link>
+                <Link to="/kategori/olahraga" className="dropdown-item">Olahraga</Link>
+                <Link to="/kategori/hiburan" className="dropdown-item">Hiburan</Link>
               </div>
             )}
           </div>
