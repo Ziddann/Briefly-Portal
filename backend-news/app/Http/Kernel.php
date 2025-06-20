@@ -36,12 +36,15 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            // CSRF protection is active for web routes (remove if not needed)
+            \App\Http\Middleware\VerifyCsrfToken::class, // Remove this if you don't need CSRF for web routes
         ],
 
         'api' => [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class, // For Sanctum (if you're using it)
-            'throttle:api', // Throttle API requests (e.g., limit requests per minute)
+            'throttle:api', // Throttle API requests (limit number of requests per minute)
             \Illuminate\Routing\Middleware\SubstituteBindings::class, // Route model binding for API
+            // CSRF middleware is not applied here since it isn't needed for API
         ],
     ];
 
