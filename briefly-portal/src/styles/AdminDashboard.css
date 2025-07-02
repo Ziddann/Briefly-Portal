@@ -1,0 +1,228 @@
+/* Global Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Admin Container */
+  .admin-dashboard-container {
+    display: flex;
+    height: 100vh;
+  }
+  
+  /* Sidebar */
+  .admin-sidebar {
+    width: 250px;
+    background-color: #343a40;
+    color: white;
+    padding: 20px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+  }
+  
+  .sidebar-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .sidebar-menu {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .sidebar-menu li {
+    margin: 15px 0;
+  }
+  
+  .sidebar-menu li a {
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+  }
+  
+  .sidebar-menu li a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Admin Main Content */
+  .admin-dashboard-content {
+    margin-left: 270px; /* Give space for the sidebar */
+    padding: 20px;
+    width: calc(100% - 270px);
+    overflow-y: auto;
+  }
+  
+  /* Dashboard Overview */
+  .dashboard-overview {
+    margin-bottom: 40px;
+  }
+  
+  .dashboard-overview h2 {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  .overview-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+  }
+  
+  .stat-item {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 8px;
+    width: 22%;
+    text-align: center;
+  }
+  
+  .stat-item h3 {
+    font-size: 24px;
+    margin: 10px 0;
+  }
+  
+  .stat-item p {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  .quick-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .quick-action-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .quick-action-btn:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Content Management */
+  .content-management {
+    margin-top: 30px;
+  }
+  
+  .content-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .content-table th, .content-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .content-table th {
+    background-color: #f8f9fa;
+  }
+  
+  .content-table button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    margin-right: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .content-table button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Recent Articles */
+  .recent-articles {
+    margin-top: 30px;
+  }
+  
+  .recent-articles h3 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .articles-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .articles-list li {
+    background-color: #f9f9f9;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .articles-list li p {
+    margin: 0;
+    color: #333;
+  }
+  
+  .articles-list li .status {
+    font-weight: bold;
+    color: #28a745; /* Green for published */
+  }
+  
+  .articles-list li .status.draft {
+    color: #ffc107; /* Yellow for draft */
+  }
+  
+  .articles-list li .status.published {
+    color: #28a745; /* Green for published */
+  }
+  
+  /* General Buttons */
+  button {
+    cursor: pointer;
+  }
+  
+  button:hover {
+    opacity: 0.8;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .admin-dashboard-container {
+      flex-direction: column;
+    }
+  
+    .admin-dashboard-content {
+      margin-left: 0;
+      width: 100%;
+    }
+  
+    .sidebar-menu li {
+      margin: 10px 0;
+    }
+  
+    .quick-actions {
+      flex-direction: column;
+    }
+  
+    .quick-action-btn {
+      margin-bottom: 10px;
+      width: 100%;
+    }
+  
+    .stat-item {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+  }
+  

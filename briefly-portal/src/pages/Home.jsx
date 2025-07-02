@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import TrendingSidebar from '../components/TrendingSidebar';
@@ -7,51 +7,52 @@ import '../styles/Home.css';
 import '../styles/responsive.css';
 
 function Home() {
-  const newsList = [
-    {
-      id: 1,
-      title: 'Breaking News: Tech Innovation',
-      description: 'A breakthrough in AI technology changes the game.',
-      imageUrl: 'https://via.placeholder.com/600x300',
-      date: 'July 21, 2023'
-    },
-    {
-      id: 2,
-      title: 'Economic Growth Soars',
-      description: 'The economy grew faster than expected this quarter.',
-      imageUrl: 'https://via.placeholder.com/600x300',
-      date: 'July 20, 2023'
-    },
-    {
-      id: 3,
-      title: 'Sports Highlight: Final Score',
-      description: 'An incredible comeback in the last 5 minutes!',
-      imageUrl: 'https://via.placeholder.com/600x300',
-      date: 'July 19, 2023'
+  const [newsList, setNewsList] = useState([]); // Menyimpan data berita dari backend
+  const [filteredNews, setFilteredNews] = useState([]);
+
+  const handleSearch = (query) => {
+    if (!query) {
+      setFilteredNews(newsList); // Jika tidak ada query, tampilkan semua berita
+    } else {
+      const filtered = newsList.filter((news) =>
+        news.title.toLowerCase().includes(query.toLowerCase()) || news.description.toLowerCase().includes(query.toLowerCase())
+      );
+      setFilteredNews(filtered); // Menyimpan berita yang terfilter
     }
-  ];
+  };
+
+  // Mengambil data dari backend saat komponen di-mount
+  useEffect(() => {
+    fetch('http://localhost:5000/api/news') // Ubah URL sesuai dengan backend API kamu
+      .then((response) => response.json()) // Mengonversi response menjadi JSON
+      .then((data) => setNewsList(data)) // Menyimpan data yang diterima ke state
+      .catch((error) => console.error('Error fetching data:', error)); // Menangani error
+  }, []); // Hanya berjalan sekali ketika komponen pertama kali di-render
 
   return (
     <div className="home-layout">
-      <Navbar />
+      <Navbar onSearch={handleSearch} />
       <div className="home-content">
         <div className="main-news">
-          {newsList.map((news) => (
-            <Link
-              to={`/news/${news.id}`}
-              key={news.id}
-              className="main-news-card"
-              style={{ textDecoration: 'none', color: 'inherit' }}
-            >
-              <img src={news.imageUrl} alt={news.title} className="main-news-img" />
-              <h2>{news.title}</h2>
-              <p>{news.description}</p>
-              <p className="news-date">{news.date}</p>
-            </Link>
-          ))}
+          {newsList.length > 0 ? (
+            newsList.map((news) => (
+              <Link
+                to={`/news/${news.id}`}
+                key={news.id}
+                className="main-news-card"
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <img src={news.imageUrl} alt={news.title} className="main-news-img" />
+                <h2>{news.title}</h2>
+                <p>{news.description}</p>
+                <p className="news-date">{news.date}</p>
+              </Link>
+            ))
+          ) : (
+            <p>Loading news...</p>
+          )}
         </div>
         <TrendingSidebar />
-        
       </div>
       <Footer />
     </div>

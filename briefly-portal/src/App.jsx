@@ -2,14 +2,19 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 import Home from './pages/Home';
-import NewsDetail from './pages/NewsDetail';
-import Login from './pages/Login';
-import Register from './pages/Register';
+import NewsDetail from './pages/News/NewsDetail';
+import Login from './pages/Auth/Login';
+import Register from './pages/Auth/Register';
 import Bookmark from './pages/Bookmark';
-import Teknologi from './pages/Teknologi';
-import Politik from './pages/Politik';
-import Olahraga from './pages/Olahraga';
-import Hiburan from './pages/Hiburan';
+import Teknologi from './pages/News/Teknologi';
+import Politik from './pages/News/Politik';
+import Olahraga from './pages/News/Olahraga';
+import Hiburan from './pages/News/Hiburan';
+import Profile from './pages/Auth/Profile';
+import CreateNews from './pages/CreateNews';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import ContentManagement from './pages/Admin/ContentManagement';
+
 
 
 
@@ -27,6 +32,10 @@ function App() {
         <Route path="/kategori/politik" element={<Politik />} />
         <Route path="/kategori/olahraga" element={<Olahraga />} />
         <Route path="/kategori/hiburan" element={<Hiburan />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/create-news" element={<CreateNews /> } />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/articles" element={<ContentManagement />} />
       </Routes>
     </>
   );

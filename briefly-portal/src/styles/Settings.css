@@ -134,3 +134,49 @@
   transform: scale(1.1);
   color: #222;
 }
+
+/* Dark Mode Styles */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+body.dark-mode .settings-modal {
+  background: #333;
+  color: #fff;
+}
+
+body.dark-mode .settings-form input,
+body.dark-mode .settings-form select {
+  background-color: #444;
+  color: white;
+  border: 1px solid #555;
+}
+
+body.dark-mode .settings-form button {
+  background-color: #007bff;
+  color: white;
+}
+
+body.dark-mode .settings-form button[type="submit"] {
+  background-color: #111;
+  color: white;
+}
+
+/* Dark mode close button for better visibility */
+body.dark-mode .settings-buttons .close-button {
+  background-color: #555;
+  color: white;
+}
+
+body.dark-mode .settings-form button[type="submit"]:hover {
+  background-color: #000;
+}
+
+body.dark-mode .close-icon {
+  color: white !important;
+}
+
+body.dark-mode .close-icon:hover {
+  color: #ccc;
+}

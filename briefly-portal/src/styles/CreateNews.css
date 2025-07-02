@@ -1,0 +1,83 @@
+/* Teks "Create News" di atas form */
+.create-news-title {
+  font-size: 36px;
+  font-weight: bold;
+  color: #333; /* Warna teks gelap untuk judul */
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+/* Form styling */
+.create-news-form {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1); /* Bayangan lebih lembut */
+  padding: 40px;
+  width: 100%;
+  max-width: 650px; /* Membatasi lebar form */
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  border: 1px solid #ddd;
+  margin: 0 auto; /* Memastikan form berada di tengah */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styling untuk label input */
+.create-news-form label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #444; /* Warna teks label */
+  display: block;
+}
+
+/* Styling untuk input field */
+.create-news-form input[type="text"],
+.create-news-form input[type="url"],
+.create-news-form input[type="date"],
+.create-news-form textarea {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  color: #333;
+  background-color: #f9f9f9;
+  box-sizing: border-box;
+}
+
+.create-news-form textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+/* Styling untuk tombol submit */
+.create-news-form button[type="submit"] {
+  background-color: #333; /* Warna gelap untuk tombol */
+  color: white;
+  border: none;
+  padding: 14px 20px;
+  font-size: 16px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.create-news-form button[type="submit"]:hover {
+  background-color: #444; /* Warna tombol lebih gelap saat hover */
+}
+
+/* Styling untuk date picker */
+.create-news-form input[type="date"] {
+  padding-left: 10px;
+}
+
+/* Responsive Design for mobile */
+@media (max-width: 600px) {
+  .create-news-form {
+    padding: 20px;
+  }
+}
