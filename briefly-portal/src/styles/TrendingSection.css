@@ -1,0 +1,175 @@
+.trending-container {
+  display: flex;
+  gap: 1rem;
+  background: #0f172a;
+  padding: 1rem;
+  border-radius: 1px;
+  color: #fff;
+  flex-wrap: wrap;
+}
+
+.highlight-section {
+  flex: 2;
+  background: linear-gradient(135deg, #1e293b, #334155);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 250px;
+  transition: transform 0.3s ease;
+}
+
+.highlight-link {
+  display: block;
+  width: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+.highlight-section:hover {
+  transform: scale(1.02);
+}
+
+.highlight-content {
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+}
+
+.highlight-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.highlight-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+}
+
+.highlight-desc {
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+}
+
+.highlight-date {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.side-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.side-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #1e293b;
+  border-radius: 6px;
+  padding: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.side-item:hover {
+  background: #334155;
+  transform: translateX(4px);
+}
+
+.side-thumb img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.side-info {
+  flex: 1;
+}
+
+.side-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.side-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+@media (max-width: 768px) {
+  .trending-container {
+    flex-direction: column;
+  }
+
+  .highlight-section {
+    min-height: 180px;
+  }
+
+  .side-list {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .side-item {
+    flex: 1 1 45%;
+  }
+}
+
+.highlight-image {
+  width: 1200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.highlight-section-small {
+  flex: 2;
+  display: flex;
+  background: #1e293b;
+  border-radius: 8px;
+  overflow: hidden;
+  align-items: center;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.highlight-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0.25rem 0;
+}
+
+.highlight-desc {
+  color: #cbd5e1;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.highlight-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.side-thumb img {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  border-radius: 4px;
+}

@@ -176,3 +176,22 @@
   cursor: pointer;
   margin-left: 1rem;
 }
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+}
+

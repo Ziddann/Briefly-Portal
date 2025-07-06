@@ -1,83 +1,62 @@
-/* Teks "Create News" di atas form */
-.create-news-title {
-  font-size: 36px;
-  font-weight: bold;
-  color: #333; /* Warna teks gelap untuk judul */
-  margin-bottom: 40px;
-  text-align: center;
+.create-news-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f4f4f4;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Form styling */
-.create-news-form {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1); /* Bayangan lebih lembut */
-  padding: 40px;
-  width: 100%;
-  max-width: 650px; /* Membatasi lebar form */
-  font-family: 'Arial', sans-serif;
+.create-news-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 24px;
   color: #333;
-  border: 1px solid #ddd;
-  margin: 0 auto; /* Memastikan form berada di tengah */
+}
+
+.create-news-form {
   display: flex;
   flex-direction: column;
 }
 
-/* Styling untuk label input */
 .create-news-form label {
-  font-size: 16px;
+  margin-bottom: 0.5rem;
   font-weight: bold;
-  margin-bottom: 8px;
-  color: #444; /* Warna teks label */
-  display: block;
+  color: #555;
 }
 
-/* Styling untuk input field */
-.create-news-form input[type="text"],
-.create-news-form input[type="url"],
-.create-news-form input[type="date"],
-.create-news-form textarea {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 20px;
-  border-radius: 8px;
+.create-news-form input,
+.create-news-form textarea,
+.create-news-form select {
+  padding: 0.75rem;
+  margin-bottom: 1.2rem;
   border: 1px solid #ccc;
+  border-radius: 4px;
   font-size: 16px;
-  color: #333;
-  background-color: #f9f9f9;
-  box-sizing: border-box;
 }
 
 .create-news-form textarea {
-  height: 150px;
+  min-height: 100px;
   resize: vertical;
 }
 
-/* Styling untuk tombol submit */
-.create-news-form button[type="submit"] {
-  background-color: #333; /* Warna gelap untuk tombol */
-  color: white;
-  border: none;
-  padding: 14px 20px;
-  font-size: 16px;
-  width: 100%;
+.create-news-form select {
+  background-color: #fff;
+  appearance: none;
   cursor: pointer;
-  border-radius: 8px;
+}
+
+.create-news-form button {
+  padding: 0.75rem;
+  background-color: #000000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
   transition: background-color 0.3s ease;
 }
 
-.create-news-form button[type="submit"]:hover {
-  background-color: #444; /* Warna tombol lebih gelap saat hover */
-}
-
-/* Styling untuk date picker */
-.create-news-form input[type="date"] {
-  padding-left: 10px;
-}
-
-/* Responsive Design for mobile */
-@media (max-width: 600px) {
-  .create-news-form {
-    padding: 20px;
-  }
+.create-news-form button:hover {
+  background-color: #5b5a5a;
 }
