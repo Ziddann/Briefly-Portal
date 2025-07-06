@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
     // Buat JWT token dan sertakan role
     const token = jwt.sign({ userId: user.id, role: user.role }, 'secretKey', { expiresIn: '1h' });
 
-    res.json({ token, role: user.role, userId: user.id, profileImage: user.profile_image });
+    res.json({ token, role: user.role, userId: user.id, profileImage: user.profileImage });
 
   } catch (err) {
     console.error('Error logging in user:', err);

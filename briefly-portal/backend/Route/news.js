@@ -19,19 +19,28 @@ router.get('/news', async (req, res) => {
 router.get('/news/:id', async (req, res) => {
   const { id } = req.params;
 
-  const query = 'SELECT * FROM news WHERE id = ?';
-
   try {
-    const [results] = await pool.query(query, [id]);  // Menggunakan async/await
+    // Ambil detail berita
+    const [results] = await pool.query('SELECT * FROM news WHERE id = ?', [id]);
     if (results.length === 0) {
       return res.status(404).json({ message: 'News not found' });
     }
-    res.json(results[0]);  // Mengirimkan berita dengan ID yang sesuai
+
+    const newsDetail = results[0];
+
+    // Ambil total likes
+    const [likeRows] = await pool.query('SELECT COUNT(*) AS likes FROM news_likes WHERE newsId = ?', [id]);
+
+    newsDetail.likes = likeRows[0].likes || 0;
+
+    res.json(newsDetail);
+
   } catch (err) {
     console.error('Error fetching news by ID:', err);
-    return res.status(500).json({ error: 'Failed to fetch news' });
+    res.status(500).json({ error: 'Failed to fetch news' });
   }
 });
+
 
 // Menambahkan berita baru
 router.post('/news', async (req, res) => {
@@ -49,26 +58,56 @@ router.post('/news', async (req, res) => {
 });
 
 // Mengambil berita trending (berita dengan jumlah komentar dan like terbanyak)
-// router.get('/trending', async (req, res) => {
-//   const query = `
-//     SELECT news.id, news.title, news.description, news.imageUrl, news.date, 
-//            COUNT(comments.id) AS commentCount, 
-//            IFNULL(SUM(news.likes), 0) AS likeCount
-//     FROM news
-//     LEFT JOIN comments ON comments.newsId = news.id
-//     LEFT JOIN news_likes ON news_likes.newsId = news.id
-//     GROUP BY news.id
-//     ORDER BY commentCount DESC, likeCount DESC
-//     LIMIT 3
-//   `;
+router.get('/trending', async (req, res) => {
+  try {
+    const [results] = await pool.query(`
+      SELECT 
+        n.id, 
+        n.title, 
+        n.imageUrl, 
+        n.description, 
+        DATE_FORMAT(n.date, '%d %M %Y') AS date,
+        (SELECT COUNT(*) FROM news_likes WHERE newsId = n.id) AS totalLikes,
+        (SELECT COUNT(*) FROM comments WHERE newsId = n.id) AS totalComments
+      FROM news n
+      ORDER BY totalLikes DESC, totalComments DESC
+      LIMIT 5
+    `);
 
-//   try {
-//     const [results] = await pool.query(query);  // Menggunakan async/await
-//     res.status(200).json(results);  // Mengembalikan hasil berita trending dalam format JSON
-//   } catch (err) {
-//     console.error('Error fetching trending news:', err);
-//     return res.status(500).json({ error: 'Failed to fetch trending news' });
-//   }
-// });
+    res.json(results);
+  } catch (err) {
+    console.error('Error fetching trending news:', err);
+    res.status(500).json({ message: 'Gagal mengambil berita trending' });
+  }
+});
+
+// GET berita berdasarkan kategori
+router.get('/news/category/:category', async (req, res) => {
+  const { category } = req.params;
+
+  try {
+    let query;
+    let params = [];
+
+    if (category === 'all') {
+      // Ambil semua berita yang category-nya TIDAK NULL atau kosong
+      query = "SELECT * FROM news WHERE category IS NOT NULL AND category != '' ORDER BY id DESC";
+    } else {
+      // Filter berdasarkan kategori tertentu
+      query = 'SELECT * FROM news WHERE category = ? ORDER BY id DESC';
+      params.push(category);
+    }
+
+    const [results] = await pool.query(query, params);
+    res.json(results);
+    
+  } catch (err) {
+    console.error('Error fetching news by category:', err);
+    res.status(500).json({ error: 'Failed to fetch news' });
+  }
+});
+
+
+
 
 module.exports = router;
