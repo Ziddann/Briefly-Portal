@@ -1,59 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import '../styles/Bookmark.css';
-import Navbar from '../components/Navbar';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
+import { Link } from "react-router-dom";
+import "../styles/Bookmark.css";
 
-function Bookmark() {
-  const [bookmarkedNews, setBookmarkedNews] = useState([]);
-  const userId = localStorage.getItem('userId'); // Mengambil userId dari localStorage
+function BookmarkPage() {
+  const [bookmarks, setBookmarks] = useState([]);
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
-    // Jika userId ada, ambil data bookmark dari backend
-    if (userId) {
-      axios
-        .get(`http://localhost:5000/api/bookmarks/${userId}`)
-        .then((response) => {
-          setBookmarkedNews(response.data); // Set data bookmark yang diterima
-        })
-        .catch((error) => {
-          console.error('Error fetching bookmarks:', error);
-          alert('Failed to fetch bookmarks');
-        });
-    } else {
-      console.log('User not logged in');
-      alert('Please log in to see your bookmarks');
-    }
-  }, [userId]); // Memastikan request ulang saat userId berubah
+    if (!userId) return alert("Silakan login untuk melihat bookmark.");
+
+    fetch(`http://localhost:5000/api/bookmarks/${userId}`)
+      .then(res => res.json())
+      .then(data => setBookmarks(data))
+      .catch(err => console.error("Gagal ambil bookmark:", err));
+  }, [userId]);
 
   return (
-    <div className="bookmark-layout">
+    <>
       <Navbar />
-      <div className="bookmark-main" style={{ display: 'flex' }}>
-        <div className="bookmark-content" style={{ flex: 1, padding: '1rem' }}>
-          <h2>Bookmarked News</h2>
-          <div className="bookmark-list">
-            {bookmarkedNews.length > 0 ? (
-              bookmarkedNews.map((news) => (
-                <div key={news.id} className="bookmark-card">
-                  <img src={news.imageUrl} alt={news.title} className="bookmark-image" />
-                  <div className="bookmark-info">
-                    <p className="bookmark-category">{news.category}</p>
-                    <h3>{news.title}</h3>
-                    <p className="bookmark-meta">By {news.author} • {news.date}</p>
-                    <p className="bookmark-description">{news.description}</p>
-                    <Link to={`/news/${news.id}`} className="bookmark-readmore">Read More</Link>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p>No bookmarked news yet</p> // Menampilkan pesan jika tidak ada berita yang dibookmark
-            )}
+
+      <div className="bookmark-hero">
+        <h2 className="bookmark-title">Berita Tersimpan</h2>
+        <p className="bookmark-subtitle">Koleksi artikel pilihan Anda dapat diakses kapan saja</p>
+      </div>
+
+      <div className="bookmark-container">
+        <div className="bookmark-filters">
+          <div>
+            <button className="filter active">Semua</button>
+            <button className="filter">Politik</button>
+            <button className="filter">Ekonomi</button>
+            <button className="filter">Teknologi</button>
+            <button className="filter">Olahraga</button>
           </div>
+          <select className="sort-select">
+            <option>Terbaru disimpan</option>
+            <option>Terlama disimpan</option>
+          </select>
+        </div>
+
+        <div className="bookmark-list">
+          {bookmarks.length > 0 ? (
+            bookmarks.map((news) => (
+              <div key={news.id} className="bookmark-card">
+                <div className="bookmark-image">
+                  <img src={news.imageUrl} alt={news.title} />
+                </div>
+                <div className="bookmark-info">
+                  <span className="bookmark-category">{news.category || "Kategori"}</span>
+                  <h3 className="bookmark-news-title">{news.title}</h3>
+                  <span className="bookmark-date">
+                    {new Date(news.date).toLocaleDateString("id-ID")}
+                  </span>
+                  <p className="bookmark-description">{news.description}</p>
+                  <p className="bookmark-meta">Oleh {news.author || "Admin"}</p>
+                  <Link to={`/news/${news.id}`} className="read-more">Baca Artikel</Link>
+                </div>
+              </div>
+            ))
+          ) : (
+            <p>Belum ada berita tersimpan.</p>
+          )}
         </div>
       </div>
-    </div>
+
+      <Footer />
+    </>
   );
 }
 
-export default Bookmark;
+export default BookmarkPage;

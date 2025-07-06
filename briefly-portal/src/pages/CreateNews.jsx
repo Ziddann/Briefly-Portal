@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import '../styles/CreateNews.css';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer'
+import Footer from '../components/Footer';
 
 function CreateNews() {
   const [form, setForm] = useState({
@@ -9,6 +9,7 @@ function CreateNews() {
     description: '',
     imageUrl: '',
     date: '',
+    category: '', // Tambahkan category ke state
   });
 
   const handleChange = (e) => {
@@ -31,13 +32,21 @@ function CreateNews() {
           description: form.description,
           imageUrl: form.imageUrl,
           date: form.date,
+          category: form.category, // Kirim kategori ke backend
         }),
       });
 
       const data = await response.json();
       if (data.message) {
         alert('News created successfully!');
-        // Redirect or reset form if necessary
+        // Reset form jika mau
+        setForm({
+          title: '',
+          description: '',
+          imageUrl: '',
+          date: '',
+          category: '',
+        });
       }
     } catch (error) {
       console.error('Error creating news:', error);
@@ -46,9 +55,11 @@ function CreateNews() {
   };
 
   return (
+    <>
+    <Navbar />
     <div className="create-news-container">
-      <Navbar/>
-      <h2 className="create-news-title">Create News</h2> {/* Menambahkan judul "Create News" */}
+      
+      <h2 className="create-news-title">Create News</h2>
       <form className="create-news-form" onSubmit={handleSubmit}>
         <label>Title</label>
         <input
@@ -88,10 +99,26 @@ function CreateNews() {
           required
         />
 
+        <label>Category</label>
+        <select
+          name="category"
+          value={form.category}
+          onChange={handleChange}
+          required
+        >
+          <option value="">Select Category</option>
+          <option value="teknologi">Teknologi</option>
+          <option value="politik">Politik</option>
+          <option value="olahraga">Olahraga</option>
+          <option value="hiburan">Hiburan</option>
+        </select>
+
         <button type="submit">Submit News</button>
       </form>
-      <Footer/>
+      
     </div>
+    <Footer />
+    </>
   );
 }
 

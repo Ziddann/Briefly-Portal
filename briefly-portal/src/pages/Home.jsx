@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
-import TrendingSidebar from '../components/TrendingSidebar';
+import TrendingSection from '../components/TrendingSection';
 import Footer from '../components/Footer';
 import '../styles/Home.css';
 import '../styles/responsive.css';
+import KategoriSection from './News/KategoriSection';
+import SearchBar from '../components/SearchBar';
 
 function Home() {
   const [newsList, setNewsList] = useState([]); // Menyimpan data berita dari backend
@@ -30,9 +32,11 @@ function Home() {
   }, []); // Hanya berjalan sekali ketika komponen pertama kali di-render
 
   return (
-    <div className="home-layout">
-      <Navbar onSearch={handleSearch} />
-      <div className="home-content">
+    <>
+      <Navbar onSearch={handleSearch} /> 
+      <TrendingSection />
+      <KategoriSection />
+      {/* <div className="home-content"> */}
         <div className="main-news">
           {newsList.length > 0 ? (
             newsList.map((news) => (
@@ -51,11 +55,10 @@ function Home() {
           ) : (
             <p>Loading news...</p>
           )}
-        </div>
-        <TrendingSidebar />
+        {/* </div> */}
       </div>
       <Footer />
-    </div>
+    </>
   );
 }
 
