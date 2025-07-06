@@ -1,169 +1,422 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import EmojiPicker from 'emoji-picker-react';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 import '../../styles/NewsDetail.css';
-import Navbar from '../../components/Navbar';
-import Footer from '../../components/Footer';
-import { FaThumbsUp, FaRegCommentDots, FaBookmark } from 'react-icons/fa';
 
 function NewsDetail() {
-  const { id } = useParams();  // Mengambil ID berita dari URL
-  const [news, setNews] = useState({});
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [commentText, setCommentText] = useState('');
+  const { id } = useParams();
+  const [news, setNews] = useState(null);
   const [comments, setComments] = useState([]);
-  const [profileImage, setProfileImage] = useState('');
+  const [newComment, setNewComment] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profileImage, setProfileImage] = useState("");
+  const [userName, setUserName] = useState("");
+  const [isLiked, setIsLiked] = useState(false);
   const [isBookmarked, setIsBookmarked] = useState(false);
-  const [userName, setUserName] = useState(''); // Menyimpan nama pengguna
-  const userId = localStorage.getItem('userId');
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [replyToggles, setReplyToggles] = useState({});
+  const [likeCount, setLikeCount] = useState(0);
+
+
+
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsLoggedIn(true);
-    }
+    const token = localStorage.getItem("token");
+    if (token && userId) setIsLoggedIn(true);
 
-    const userProfileImage = localStorage.getItem('profileImage');
-    setProfileImage(userProfileImage || '/default-avatar.png');
+    setProfileImage(localStorage.getItem("profileImage") || "/default-avatar.png");
+    setUserName(localStorage.getItem("userName") || "User");
 
-    const userNameFromStorage = localStorage.getItem('userName'); // Ambil nama pengguna
-    setUserName(userNameFromStorage || 'User');
-
-    // Ambil data berita
     fetch(`http://localhost:5000/api/news/${id}`)
-      .then((response) => response.json())
-      .then((data) => setNews(data))
-      .catch((error) => console.error('Error fetching news:', error));
+    .then(res => res.json())
+    .then((data) => {
+      setNews(data);
+      setLikeCount(data.likes || 0);
+    })
+    .catch(err => console.error(err));
+  
 
-    // Ambil komentar berdasarkan ID berita
     fetch(`http://localhost:5000/api/comments/${id}`)
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => setComments(data))
-      .catch((error) => console.error('Error fetching comments:', error));
+      .catch((err) => console.error("Error fetching comments:", err));
 
-    // Cek apakah artikel sudah dibookmark oleh pengguna
-    fetch(`http://localhost:5000/api/bookmarks/${userId}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const bookmarkedNews = data.find((item) => item.newsId === parseInt(id));
-        if (bookmarkedNews) {
-          setIsBookmarked(true);
-        }
-      })
-      .catch((error) => console.error(error));
+    fetch(`http://localhost:5000/api/news/${id}/liked/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setIsLiked(data.liked))
+      .catch((err) => console.error("Error checking like status:", err));
+
+    fetch(`http://localhost:5000/api/news/${id}/bookmarked/${userId}`)
+      .then((res) => res.json())
+      .then((data) => setIsBookmarked(data.bookmarked))
+      .catch((err) => console.error("Error checking bookmark status:", err));
+
   }, [id, userId]);
 
-  // Mengirimkan komentar ke backend
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
+    if (!isLoggedIn) return alert("Please login to comment.");
+    if (!newComment) return alert("Please enter a comment.");
 
-    if (!isLoggedIn) {
-      alert('Please login to comment.');
-      return;
-    }
-
-    if (!commentText) {
-      alert('Please enter a comment.');
-      return;
-    }
-
-    const newComment = {
-      userId: userId,
+    const newCommentData = {
+      userId,
       newsId: id,
-      commentText: commentText,
-      createdAt: new Date().toLocaleString(),
+      commentText: newComment,
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/comments', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newComment),
+      const res = await fetch("http://localhost:5000/api/comments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newCommentData),
       });
 
-      const data = await response.json();
+      const data = await res.json();
       if (data.message) {
-        setComments((prevComments) => [...prevComments, newComment]);
-        setCommentText('');  // Reset input komentar setelah dikirim
+        fetch(`http://localhost:5000/api/comments/${id}`)
+          .then((res) => res.json())
+          .then((data) => setComments(data))
+          .catch((err) => console.error("Error fetching comments:", err));
+
+        setNewComment("");
+        setProfileImage(localStorage.getItem("profileImage") || "/default-avatar.png");
+        setUserName(localStorage.getItem("userName") || "User");
       } else {
-        alert('Failed to add comment');
+        alert("Failed to add comment");
       }
-    } catch (error) {
-      console.error('Error adding comment:', error);
+    } catch (err) {
+      console.error("Error adding comment:", err);
     }
   };
+
+  const handleLike = async () => {
+    if (!isLoggedIn) return alert("Please login to like the news.");
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/news/${id}/like`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId }),
+      });
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        setIsLiked(data.liked);
+        setLikeCount(data.likes);  // totalLikes yang dikirim dari backend
+      }
+    } catch (err) {
+      console.error("Error liking news:", err);
+    }
+  };
+  
+  
+
+  const handleBookmark = async () => {
+    if (!isLoggedIn) return alert("Please login to bookmark the news.");
+
+    try {
+      const res = await fetch(`http://localhost:5000/api/news/${id}/bookmark`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId })
+      });
+      const data = await res.json();
+      if (data.success) setIsBookmarked(data.bookmarked);
+    } catch (err) {
+      console.error("Error bookmarking news:", err);
+    }
+  };
+
+  const handleReactComment = async (commentId, action) => {
+    if (!isLoggedIn) return alert("Silakan login.");
+  
+    try {
+      const res = await fetch(`http://localhost:5000/api/comments/${commentId}/react`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, action }),
+      });
+  
+      const data = await res.json();
+  
+      if (data.success) {
+        const updated = comments.map(c => {
+          if (c.id === commentId) {
+            return {
+              ...c,
+              likes: action === "like" ? (data.liked ? c.likes + 1 : c.likes - 1) : data.liked ? c.likes + 1 : c.likes - 1,
+              dislikes: action === "dislike" ? (data.disliked ? c.dislikes + 1 : c.dislikes - 1) : data.disliked ? c.dislikes + 1 : c.dislikes - 1,
+              userReact: data.liked ? "like" : data.disliked ? "dislike" : null,
+            };
+          }
+          return c;
+        });
+  
+        setComments(updated);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  
+  
+  const toggleReply = (commentId) => {
+    setReplyToggles((prev) => ({
+      ...prev,
+      [commentId]: !prev[commentId],
+    }));
+  };
+
+  const handleReply = async (parentId, replyText) => {
+    if (!isLoggedIn) return alert("Silakan login untuk membalas.");
+    if (!replyText) return alert("Isi balasan tidak boleh kosong.");
+  
+    try {
+      const res = await fetch("http://localhost:5000/api/comments/reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userId,
+          newsId: id,
+          commentText: replyText,
+          parentId
+        })
+      });
+  
+      const data = await res.json();
+      if (data.success) {
+        fetch(`http://localhost:5000/api/comments/${id}`)
+          .then(res => res.json())
+          .then(data => setComments(data));
+      } else {
+        alert("Gagal mengirim balasan");
+      }
+    } catch (err) {
+      console.error("Error mengirim balasan:", err);
+      alert("Terjadi kesalahan saat mengirim balasan");
+    }
+  };
+  
+  
+  
 
   return (
     <>
       <Navbar />
-      <div className="news-detail-page">
-        <main className="news-content">
-          <Link to="/" className="close-button" title="Back to Home">×</Link>
 
-          <input className="search-bar" placeholder="Search news..." />
+      <div className="breadcrumb">
+        <a href="/">Beranda</a> &gt; <a href="#">Politik</a> &gt; <span>{news?.title}</span>
+      </div>
 
-          <div className="news-article">
-            {news.imageUrl && (
-              <img className="news-image" src={news.imageUrl} alt="News Visual" />
-            )}
-            <h2 className="news-title">{news.title}</h2>
-            <p className="news-meta">
-              By {news.author} • {news.date} • <span className="news-category">{news.category}</span>
-            </p>
+      <div className="container">
 
-            {news.content && news.content.length > 0 ? (
-              news.content.map((para, index) => (
-                <p className="news-body" key={index}>{para}</p>
-              ))
-            ) : (
-              <p>No content available.</p>
-            )}
+        <div className="meta-top">
+          <span className="category-badge">POLITIK</span>
+          <span className="dot">•</span>
+          <span>{news?.time ? new Date(news.time).toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' }) : "-"}</span>
+          <span className="dot">•</span>
+          <span>8 menit baca</span>
+        </div>
 
-            {/* Like, Comment, and Bookmark */}
-            <div className="news-actions">
-              <button onClick={() => alert('Like functionality coming soon!')}><FaThumbsUp /> Like {news.likes}</button>
-              <button onClick={handleCommentSubmit}><FaRegCommentDots /> Comment</button>
-              <button onClick={() => alert('Bookmark functionality coming soon!')}><FaBookmark /> Bookmark</button>
+        <h1 className="news-title">{news?.title}</h1>
+
+        <div className="author-section">
+          <img src={profileImage || "/default-avatar.png"} alt="Avatar" className="author-avatar" />
+          <div>
+            <p className="author-name">{userName}</p>
+            <p className="author-role">Senior Political Reporter</p>
+          </div>
+        </div>
+
+        <div className="action-buttons">
+  <button onClick={handleLike}>
+    {isLiked ? `💖 ${likeCount}` : `👍 ${likeCount} Like`}
+  </button>
+  <button onClick={handleBookmark}>
+    {isBookmarked ? "🔖 Bookmarked" : "🔖 Bookmark"}
+  </button>
+  <button>🔗 Share</button>
+</div>
+
+
+        <div className="news-image">
+          {news?.imageUrl ? (
+            <img src={news.imageUrl} alt="News" />
+          ) : (
+            <p>Gambar Utama - Presiden dalam Konferensi Pers</p>
+          )}
+        </div>
+
+        <div className="news-content">
+          <p className="intro">{news?.description || "Konten belum tersedia."}</p>
+        </div>
+
+        <hr className="divider" />
+
+        <div className="comment-section">
+  <div className="comment-header">
+    <h3>Komentar ({comments.length})</h3>
+    <select className="sort-select">
+      <option>Terbaru</option>
+      <option>Terlama</option>
+    </select>
+  </div>
+
+  {isLoggedIn && (
+    <div className="comment-input-wrapper">
+      <img src={profileImage || "/default-avatar.png"} alt="Avatar" className="avatar" />
+      <input
+        className="comment-box"
+        placeholder="Tulis komentar Anda..."
+        value={newComment}
+        onChange={(e) => setNewComment(e.target.value)}
+      />
+      <div className="comment-tools">
+        <button onClick={() => setNewComment(newComment + "😊")}>😊</button>
+        <button onClick={() => alert("Fitur gambar belum tersedia")}>🖼️</button>
+        <button className="submit-btn" onClick={handleCommentSubmit}>Kirim</button>
+      </div>
+    </div>
+  )}
+
+  <div className="comment-list">
+    {comments.length > 0 ? (
+      comments.slice(0, visibleCount).map((c) => (
+        <div key={c.id} className="comment-item">
+          <img src={c.profileImage || "/default-avatar.png"} alt="Avatar" className="avatar" />
+          <div className="comment-content">
+            
+            {/* Meta Info */}
+            <div className="comment-meta">
+              <span className="comment-username">{c.username}</span>
+              <span className="comment-time">{new Date(c.createdAt).toLocaleString("id-ID")}</span>
             </div>
 
-            {/* Comment Section */}
-            <section className="comments-section">
-              <h3>Comments</h3>
-              <div className="comment-form">
-                <img className="avatar" src={profileImage} alt="User" />
-                <textarea
-                  className="comment-input"
-                  placeholder="Add a comment..."
-                  value={commentText}
-                  onChange={(e) => setCommentText(e.target.value)}
-                />
-                <button className="comment-button" onClick={handleCommentSubmit}>Post Comment</button>
-              </div>
+            {/* Teks Komentar */}
+            <p className="comment-text">{c.commentText}</p>
 
-              {/* Display Comments */}
-              <div className="comment-list">
-                {Array.isArray(comments) && comments.length > 0 ? (
-                  comments.map((comment, index) => (
-                    <div className="comment" key={index}>
-                      <div className="comment-header">
-                        <img className="avatar" src={profileImage} alt="User" />
-                        <p><strong>{userName}</strong></p>
-                        <p className="comment-time">{new Date(comment.createdAt).toLocaleString()}</p>
-                      </div>
-                      <p className="comment-text">{comment.commentText}</p>
-                      <div className="comment-actions">
-                        <button onClick={() => alert('Like functionality coming soon!')}>👍 Like</button>
-                        <button onClick={() => alert('Reply functionality coming soon!')}>💬 Reply</button>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p>No comments yet.</p>
-                )}
+            {/* Tombol Aksi */}
+            <div className="comment-actions">
+  <button onClick={() => handleReactComment(c.id, "like")}>
+    {c.userReact === "like" ? "💖" : "👍"} {c.likes}
+  </button>
+  <button onClick={() => handleReactComment(c.id, "dislike")}>
+    {c.userReact === "dislike" ? "👎" : "👎"}
+  </button>
+</div>
+
+
+            {/* Input Balasan */}
+            {replyToggles[c.id] && (
+              <div className="reply-input">
+                <input
+                  placeholder="Tulis balasan..."
+                  value={c.replyText || ""}
+                  onChange={(e) => {
+                    const updated = comments.map((item) =>
+                      item.id === c.id ? { ...item, replyText: e.target.value } : item
+                    );
+                    setComments(updated);
+                  }}
+                />
+                <button onClick={() => handleReply(c.id, c.replyText)}>Kirim</button>
               </div>
-            </section>
+            )}
+
+            {/* Daftar Balasan */}
+            {c.replies && c.replies.length > 0 && (
+              <div className="reply-list">
+                {c.replies.map((r) => (
+                  <div key={r.id} className="reply-item">
+                    <img src={r.profileImage || "/default-avatar.png"} alt="Avatar" className="avatar small" />
+                    <div>
+                      <span className="comment-username">{r.username}</span>
+                      <span className="comment-time">{new Date(r.createdAt).toLocaleString("id-ID")}</span>
+                      <p className="comment-text">{r.commentText}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
           </div>
-        </main>
+        </div>
+      ))
+    ) : (
+      <p>Belum ada komentar.</p>
+    )}
+  </div>
+
+  {visibleCount < comments.length && (
+    <button className="load-more" onClick={() => setVisibleCount(visibleCount + 5)}>
+      Muat Komentar Lainnya
+    </button>
+  )}
+</div>
+
+
+
+        <div className="related-articles">
+          <h3>Artikel Terkait</h3>
+          <div className="related-grid">
+
+            <div className="related-item">
+              <div className="related-image">Gambar Berita Ekonomi</div>
+              <div className="related-info">
+                <span className="related-category">EKONOMI</span>
+                <h4 className="related-title">Dampak Kebijakan Fiskal Terhadap UMKM</h4>
+                <p className="related-description">
+                  Analisis mendalam tentang bagaimana kebijakan pemerintah mempengaruhi sektor usaha mikro...
+                </p>
+                <div className="related-meta">
+                  <span>1 hari lalu</span>
+                  <span>•</span>
+                  <span>5 min baca</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="related-item">
+              <div className="related-image">Gambar Berita Teknologi</div>
+              <div className="related-info">
+                <span className="related-category">TEKNOLOGI</span>
+                <h4 className="related-title">Digitalisasi Layanan Publik di Indonesia</h4>
+                <p className="related-description">
+                  Transformasi digital yang mengubah cara pemerintah melayani masyarakat...
+                </p>
+                <div className="related-meta">
+                  <span>2 hari lalu</span>
+                  <span>•</span>
+                  <span>7 min baca</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="related-item">
+              <div className="related-image">Gambar Berita Sosial</div>
+              <div className="related-info">
+                <span className="related-category">SOSIAL</span>
+                <h4 className="related-title">Program Bantuan Sosial: Evaluasi dan Proyeksi</h4>
+                <p className="related-description">
+                  Tinjauan komprehensif terhadap efektivitas program bantuan sos...
+                </p>
+                <div className="related-meta">
+                  <span>3 hari lalu</span>
+                  <span>•</span>
+                  <span>6 min baca</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
       </div>
+
       <Footer />
     </>
   );
