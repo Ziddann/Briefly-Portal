@@ -1,30 +1,38 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/Register.css';
 
 function Register() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
-    role: 'reader', // Default role is 'reader'
+    agree: false,
+    subscribe: true,
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
-    const { name, value, type } = e.target;
+    const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? e.target.checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validasi jika password dan confirm password cocok
+    if (!form.agree) {
+      alert('Anda harus menyetujui Syarat & Ketentuan!');
+      return;
+    }
+
     if (form.password !== form.confirmPassword) {
-      alert('Password and Confirm Password do not match!');
+      alert('Password tidak cocok!');
       return;
     }
 
@@ -35,84 +43,110 @@ function Register() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
+          phone: form.phone,
           password: form.password,
-          role: form.role, // Send the selected role to backend
+          role: 'reader', 
         }),
       });
 
       const data = await response.json();
       if (data.message) {
-        alert('Registration successful! Please login.');
-        // Redirect atau reset form jika diperlukan
+        alert('Pendaftaran berhasil! Silahkan login.');
+        navigate('/login');
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Registration failed. Please check again.');
+      alert('Pendaftaran gagal!');
     }
   };
 
   return (
     <div className="register-container">
       <form className="register-box" onSubmit={handleSubmit}>
-        <Link to="/" className="register-title">BrieflyNews</Link>
+        <div className="register-icon-logo">📰</div>
+        <h1 className="register-title">NewsPortal</h1>
+        <p className="register-subtitle">Bergabung dengan komunitas berita terdepan</p>
 
-        <label>Full Name</label>
+        <h2 className="register-form-title">Daftar Akun</h2>
+        <p className="register-form-desc">Dapatkan akses ke berita terkini dan eksklusif</p>
+
         <input
           type="text"
           name="name"
-          placeholder="Enter your full name"
+          placeholder="Nama Lengkap"
           value={form.name}
           onChange={handleChange}
           required
+          className="register-input"
         />
-
-        <label>Email</label>
         <input
           type="email"
           name="email"
-          placeholder="Enter your email"
+          placeholder="nama@email.com"
           value={form.email}
           onChange={handleChange}
           required
+          className="register-input"
         />
-
-        <label>Password</label>
+        <input
+          type="tel"
+          name="phone"
+          placeholder="+62 812 3456 7890"
+          value={form.phone}
+          onChange={handleChange}
+          required
+          className="register-input"
+        />
         <input
           type="password"
           name="password"
-          placeholder="Create a password"
+          placeholder="Minimal 8 karakter"
           value={form.password}
           onChange={handleChange}
           required
+          className="register-input"
         />
-
-        <label>Confirm Password</label>
         <input
           type="password"
           name="confirmPassword"
-          placeholder="Confirm your password"
+          placeholder="Ulangi password"
           value={form.confirmPassword}
           onChange={handleChange}
           required
+          className="register-input"
         />
 
-        {/* Role selection dropdown (reader or author) */}
-        <label>Role</label>
-        <select
-          name="role"
-          value={form.role}
-          onChange={handleChange}
-        >
-          <option value="reader">Reader</option>
-          <option value="author">Author</option>
-        </select>
+        <div className="register-checkbox-group">
+          <input
+            type="checkbox"
+            name="agree"
+            checked={form.agree}
+            onChange={handleChange}
+          />
+          <span>
+            Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a>
+          </span>
+        </div>
 
-        <button type="submit" className="register-button">
-          Create Account
-        </button>
+        <div className="register-checkbox-group">
+          <input
+            type="checkbox"
+            name="subscribe"
+            checked={form.subscribe}
+            onChange={handleChange}
+          />
+          <span>Saya ingin menerima newsletter dan update berita terbaru</span>
+        </div>
 
-        <p className="register-link">
-          Already have an account? <Link to="/login">Login</Link>
+        <button type="submit" className="register-button">Daftar Sekarang</button>
+
+        <div className="register-divider">atau</div>
+
+        <button type="button" className="register-google-btn">Daftar dengan Google</button>
+        <button type="button" className="register-facebook-btn">Daftar dengan Facebook</button>
+
+        <p className="register-login-link">
+          Sudah punya akun? <Link to="/login">Masuk di sini</Link>
         </p>
       </form>
     </div>

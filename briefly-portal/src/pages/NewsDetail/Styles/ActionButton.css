@@ -1,0 +1,103 @@
+/* Tombol utama like/bookmark */
+.action-buttons {
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .action-buttons button {
+    background-color: #441f77;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    margin-right: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s;
+  }
+  
+  .action-buttons button:hover {
+    background-color: #5e2d9a;
+  }
+  
+  /* Komentar wrapper */
+  .comment-section {
+    margin-top: 20px;
+  }
+  
+  .comment-wrapper {
+    border: 1px solid #444;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #1e1e2f;
+  }
+  
+  /* Indentasi reply */
+  .depth-1 {
+    margin-left: 20px;
+  }
+  
+  .depth-2 {
+    margin-left: 40px;
+  }
+  
+  .depth-3 {
+    margin-left: 60px;
+  }
+  
+  /* Konten komentar */
+  .comment-content {
+    margin-bottom: 8px;
+    color: #fff;
+  }
+  
+  /* Aksi komentar (like/dislike/balas) */
+  .comment-actions button {
+    background: transparent;
+    border: none;
+    color: #b3b3ff;
+    margin-right: 8px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .comment-actions button:hover {
+    text-decoration: underline;
+  }
+  
+  /* Input balasan */
+  .reply-input {
+    margin-top: 8px;
+    display: flex;
+    gap: 8px;
+  }
+  
+  .reply-input input {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #888;
+    background-color: #2e2e3f;
+    color: white;
+  }
+  
+  .reply-input button {
+    padding: 6px 12px;
+    background-color: #4c2a85;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  .reply-input button:hover {
+    background-color: #5d39a3;
+  }
+  
+  /* Wrapper emoji picker */
+  .emoji-picker-wrapper {
+    position: absolute;
+    z-index: 100;
+  }
+  

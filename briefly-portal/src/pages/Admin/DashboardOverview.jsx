@@ -1,26 +1,46 @@
-import React from 'react';
-import '../../styles/AdminDashboard.css';  // Impor CSS terpusat di AdminDashboard.jsx
-
+import React, { useEffect, useState } from 'react';
+import '../../styles/AdminDashboard.css';
 
 function DashboardOverview() {
+  const [stats, setStats] = useState({
+    totalArticles: 0,
+    totalUsers: 0,
+    totalPageViews: 0,
+    totalComments: 0,
+  });
+
+  const fetchStats = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/stats');
+      const data = await res.json();
+      setStats(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchStats();
+  }, []);
+
   return (
     <div className="dashboard-overview">
       <h2>Dashboard Overview</h2>
       <div className="overview-stats">
         <div className="stat-item">
-          <h3>1,234</h3>
+          <h3>{stats.totalArticles}</h3>
           <p>Total Articles</p>
         </div>
         <div className="stat-item">
-          <h3>5,678</h3>
+          <h3>{stats.totalUsers}</h3>
           <p>Active Users</p>
         </div>
         <div className="stat-item">
-          <h3>89,012</h3>
+          <h3>{stats.totalPageViews}</h3>
           <p>Page Views</p>
         </div>
         <div className="stat-item">
-          <h3>345</h3>
+          <h3>{stats.totalComments}</h3>
           <p>Comments</p>
         </div>
       </div>

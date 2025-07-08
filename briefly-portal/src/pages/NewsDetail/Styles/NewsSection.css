@@ -1,0 +1,100 @@
+.news-detail-section {
+    padding: 24px;
+    border-radius: 12px;
+    background-color: #1a1a2d;
+    color: white;
+    margin-bottom: 40px;
+  }
+  
+  /* Breadcrumb */
+  .breadcrumb {
+    font-size: 14px;
+    color: #aaa;
+    margin-bottom: 12px;
+  }
+  
+  .breadcrumb a {
+    color: #c69df2;
+    text-decoration: none;
+  }
+  
+  .breadcrumb span {
+    color: #ccc;
+  }
+  
+  /* Meta Info */
+  .meta-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #bbb;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  
+  .category-badge {
+    background-color: #7938d7;
+    padding: 2px 10px;
+    border-radius: 16px;
+    font-size: 12px;
+    color: white;
+  }
+  
+  .dot {
+    font-size: 18px;
+    line-height: 0;
+  }
+  
+  /* Judul */
+  .news-title {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 12px;
+  }
+  
+  /* Penulis */
+  .author-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .author-name {
+    font-weight: 600;
+    margin: 0;
+  }
+  
+  .author-role {
+    font-size: 13px;
+    color: #aaa;
+    margin-top: 4px;
+  }
+  
+  /* Gambar utama */
+  .news-image {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .news-image img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+  }
+  
+  /* Isi berita */
+  .news-content .intro {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #ddd;
+  }
+  
+  /* Garis pembatas */
+  .divider {
+    border: none;
+    border-top: 1px solid #333;
+    margin-top: 30px;
+  }
+  
