@@ -1,8 +1,9 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
+import './App.css'
 
 import Home from './pages/Home';
-import NewsDetail from './pages/News/NewsDetail';
+import NewsDetail from './pages/NewsDetail/NewsDetail';
 import Login from './pages/Auth/Login';
 import Register from './pages/Auth/Register';
 import Bookmark from './pages/Bookmark';
