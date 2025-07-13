@@ -9,6 +9,8 @@ const authRouter = require('./Route/auth'); // Router autentikasi
 const newsRouter = require('./Route/news');
 const userRouter = require('./Route/profile');
 const interactionRoute = require('./Route/interaction');
+const statsRoute = require('./Route/stats');
+const authorRoute = require('./Route/author');
 
 
 app.use(express.json());
@@ -23,6 +25,10 @@ app.use('/api', authRouter); // API untuk autentikasi
 app.use('/api', newsRouter);
 app.use('/api', userRouter);
 app.use('/api', interactionRoute);
+app.use('/api/admin', statsRoute);
+app.use('/api/author', authorRoute);
+
+
 
 
 

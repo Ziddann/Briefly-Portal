@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 
 // Membuat koneksi pool ke MySQL
 const pool = mysql.createPool({
-  host: process.env.host,
-  user: process.env.DB_USER,  // Ganti dengan username MySQL Anda
-  password: process.env.DB_PASSWORD,  // Ganti dengan password MySQL Anda
-  database: process.env.DB_DATABASE, // Ganti dengan nama database Anda
+  host: 'localhost',
+  user: 'root',  // Ganti dengan username MySQL Anda
+  password: '',  // Ganti dengan password MySQL Anda
+  database: 'brieflynews', // Ganti dengan nama database Anda
   waitForConnections: true, // Menunggu koneksi yang tersedia jika jumlah koneksi melebihi limit
   connectionLimit: 10, // Maksimal jumlah koneksi yang dibuka
   queueLimit: 0 // Tidak membatasi antrean koneksi
