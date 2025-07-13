@@ -46,9 +46,9 @@
   
   /* Komentar */
   .comment-item {
-    margin-bottom: 12px;
-    padding-bottom: 12px;
     border-bottom: 1px solid #333;
+    padding: 10px 0;
+    margin: 0;
   }
   
   .comment-header {
@@ -73,6 +73,12 @@
     margin: 4px 0 0;
     color: #ddd;
     font-size: 14px;
+  }
+  
+  .reply-arrow {
+    color: #aaa;
+    font-size: 13px;
+    margin-right: 4px;
   }
   
   /* Tombol balas */
@@ -118,10 +124,58 @@
     background-color: #7150da;
   }
   
-  /* Nested comment indent */
-  .replies {
-    margin-top: 8px;
-    padding-left: 20px;
-    border-left: 1px solid #444;
+  .comment-reactions {
+    display: flex;
+    gap: 10px;
+    margin-top: 5px;
   }
   
+  .comment-reactions button {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+  }
+  
+  .comment-reactions button:hover {
+    color: white;
+  }
+  
+  /* Tambahan untuk reply box */
+  .reply-box {
+    background-color: #2e2e40;
+    border: 1px solid #444;
+    border-radius: 6px;
+    padding: 10px 15px;
+    margin-top: 10px;
+    margin-left: 20px;
+  }
+  
+  .comment-item.reply {
+    border-bottom: 1px solid #3c3c3c;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .comment-item.reply:last-child {
+    border-bottom: none;
+  }
+  
+  .toggle-replies {
+    margin-top: 5px;
+  }
+  
+  .toggle-replies button {
+    font-size: 13px;
+    color: #aaa;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .toggle-replies button:hover {
+    color: #fff;
+    text-decoration: underline;
+  }

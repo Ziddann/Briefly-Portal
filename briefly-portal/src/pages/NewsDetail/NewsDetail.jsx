@@ -1,42 +1,35 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 import NewsSection from "./NewsSection";
-import ActionButton from "./ActionButton";
 import CommentSection from "./CommentSection";
 
-import "./styles/NewsDetail.css"; // global styling (kalau ada)
+import "./styles/NewsDetail.css";
 
 const NewsDetail = () => {
-    const { id } = useParams(); // Ambil newsId dari URL param
-    const newsId = id;
-    const userId = sessionStorage.getItem("userId") || localStorage.getItem("userId");
-  
-    const [comments, setComments] = useState([]);
+  const { id } = useParams();
+  const location = useLocation();
+
+  const newsId = id;
+  const userId = sessionStorage.getItem("userId") || localStorage.getItem("userId");
+
+  const [comments, setComments] = useState([]);
+
+  // Jangan tampilkan navbar & footer jika path mengandung "/admin" atau "/author"
+  const hideLayout = location.pathname.startsWith("/admin") || location.pathname.startsWith("/author");
 
   return (
     <div className="page-container">
-      <Navbar />
+      {!hideLayout && <Navbar />}
 
       <div className="news-detail-wrapper">
-        {/* Informasi berita */}
         <NewsSection newsId={newsId} />
-
-        {/* Tombol aksi: like, bookmark, emoji, reply */}
-        <ActionButton
-          newsId={newsId}
-          userId={userId}
-          comments={comments}
-          setComments={setComments}
-        />
-
-        {/* Komentar & reply */}
         <CommentSection newsId={newsId} userId={userId} />
       </div>
 
-      <Footer />
+      {!hideLayout && <Footer />}
     </div>
   );
 };

@@ -1,47 +1,64 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../styles/Login.css';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import { useNotification } from '../../components/Notification';
+import './styles/Login.css';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
 
-    const response = await fetch('http://localhost:5000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (data.token) {
-      // Menyimpan token dan data pengguna
-      if (rememberMe) {
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('userId', data.userId);
-        localStorage.setItem('role', data.role);
-        localStorage.setItem('profileImage', data.profileImage);
+      if (data.token) {
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem('token', data.token);
+        storage.setItem('userId', data.userId);
+        storage.setItem('role', data.role);
+        storage.setItem('profileImage', data.profileImage);
+
+        showNotification('Login berhasil!', 'success');
+
+        setTimeout(() => {
+          navigate(
+            data.role === 'admin'
+              ? '/admin/dashboard'
+              : data.role === 'author'
+              ? '/author/dashboard'
+              : '/'
+          );
+        }, 1500);
       } else {
-        sessionStorage.setItem('token', data.token);
-        sessionStorage.setItem('userId', data.userId);
-        sessionStorage.setItem('role', data.role);
-        sessionStorage.setItem('profileImage', data.profileImage);
+        showNotification('Email atau password salah.', 'error');
+        setIsLoading(false);
       }
-
-      alert('Login Successful');
-      navigate('/');
-    } else {
-      alert('Login Failed');
+    } catch (error) {
+      console.error('Login error:', error);
+      showNotification('Terjadi kesalahan saat login. Silakan coba lagi.', 'error');
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="login-page">
+      <LoadingOverlay isLoading={isLoading} />
+
       <div className="login-container">
         {/* Kolom kiri */}
         <div className="left-column">
@@ -54,7 +71,7 @@ function Login() {
           </div>
         </div>
 
-        {/* Formulir login */}
+        {/* Formulir Login */}
         <form className="login-box" onSubmit={handleSubmit}>
           <h2>Selamat Datang Kembali</h2>
 
@@ -66,6 +83,7 @@ function Login() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            disabled={isLoading}
           />
 
           <label htmlFor="password">Password</label>
@@ -76,20 +94,23 @@ function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            disabled={isLoading}
           />
 
-          {/* Remember me checkbox */}
           <div className="checkbox">
             <input
               type="checkbox"
               id="rememberMe"
               checked={rememberMe}
               onChange={() => setRememberMe(!rememberMe)}
+              disabled={isLoading}
             />
             <label htmlFor="rememberMe">Ingat saya</label>
           </div>
 
-          <button type="submit" className="login-button">Masuk</button>
+          <button type="submit" className="login-button" disabled={isLoading}>
+            Masuk
+          </button>
 
           <p className="forgot-password">
             <Link to="/forgot-password">Lupa password?</Link>
@@ -97,12 +118,6 @@ function Login() {
 
           <div className="register-link">
             Belum punya akun? <Link to="/register">Daftar sekarang</Link>
-          </div>
-
-          {/* Tombol login sosial */}
-          <div className="social-login">
-            <button type="button" className="social-button google">G</button>
-            <button type="button" className="social-button facebook">F</button>
           </div>
         </form>
       </div>

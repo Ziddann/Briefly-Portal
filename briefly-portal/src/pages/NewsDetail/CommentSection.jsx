@@ -1,24 +1,45 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { nestComments } from "./hook/nestComments";
-import "./Styles/CommentSection.css"
+import { useCommentAction } from "./hook/useCommentActions";
+import "./Styles/CommentSection.css";
+import ReportButton from "../../components/ReportButton";
+import { useNotification } from "../../components/notification";
 
 function CommentSection({ newsId, userId }) {
   const [comments, setComments] = useState([]);
+  const [repliesMap, setRepliesMap] = useState({});
+  const [showReplies, setShowReplies] = useState({});
   const [commentText, setCommentText] = useState("");
   const [replyInputs, setReplyInputs] = useState({});
+  const [role, setRole] = useState("");
+
+  const { showNotification } = useNotification();
+  const { reactToComment, submitReply } = useCommentAction(newsId, userId);
 
   useEffect(() => {
+    const storedRole = localStorage.getItem("role") || sessionStorage.getItem("role");
+    if (storedRole) setRole(storedRole);
+
     fetchComments();
   }, [newsId]);
 
   const fetchComments = async () => {
     try {
       const res = await axios.get(`http://localhost:5000/api/comments/${newsId}`);
-      const nested = nestComments(res.data);
-      setComments(nested);
+      const data = res.data;
+      const main = data.filter(c => c.parentId === null);
+      const map = {};
+      data.forEach(c => {
+        if (c.parentId !== null) {
+          if (!map[c.parentId]) map[c.parentId] = [];
+          map[c.parentId].push(c);
+        }
+      });
+      setComments(main);
+      setRepliesMap(map);
     } catch (err) {
       console.error("Gagal mengambil komentar:", err);
+      showNotification("Gagal mengambil komentar", "error");
     }
   };
 
@@ -28,96 +49,58 @@ function CommentSection({ newsId, userId }) {
       await axios.post("http://localhost:5000/api/comments", {
         userId,
         newsId,
-        commentText,
+        commentText
       });
       setCommentText("");
+      showNotification("Komentar berhasil dikirim", "success");
       fetchComments();
     } catch (err) {
       console.error("Gagal mengirim komentar:", err);
+      showNotification("Gagal mengirim komentar", "error");
     }
   };
 
   const handleReplyToggle = (commentId) => {
-    setReplyInputs((prev) => ({
+    setReplyInputs(prev => ({
       ...prev,
-      [commentId]: prev[commentId] ? "" : "",
+      [commentId]: prev[commentId] === undefined ? "" : undefined
     }));
   };
 
   const handleReplyInputChange = (e, commentId) => {
-    const value = e.target.value;
-    setReplyInputs((prev) => ({
-      ...prev,
-      [commentId]: value,
-    }));
+    setReplyInputs(prev => ({ ...prev, [commentId]: e.target.value }));
   };
 
   const handleReplySubmit = async (parentId) => {
     const replyText = replyInputs[parentId];
     if (!replyText?.trim()) return;
-
     try {
-      await axios.post("http://localhost:5000/api/comments/reply", {
-        userId,
-        newsId,
-        parentId,
-        commentText: replyText,
-      });
-      setReplyInputs((prev) => ({ ...prev, [parentId]: "" }));
+      await submitReply(parentId, replyText);
+      setReplyInputs(prev => ({ ...prev, [parentId]: undefined }));
+      showNotification("Balasan berhasil dikirim", "success");
       fetchComments();
     } catch (err) {
       console.error("Gagal membalas komentar:", err);
+      showNotification("Gagal mengirim balasan", "error");
     }
   };
 
-  const renderComments = (commentList, depth = 0) => {
-    return commentList.map((comment) => (
-      <div
-        key={comment.id}
-        className="comment-item"
-        style={{ marginLeft: depth * 20, borderLeft: depth ? "1px solid #ccc" : "none", paddingLeft: 10 }}
-      >
-        <div className="comment-header">
-          <img
-            src={comment.profileImage}
-            alt={comment.username}
-            width={30}
-            height={30}
-            style={{ borderRadius: "50%" }}
-          />
-          <strong>{comment.username}</strong>
-          <p>{comment.commentText}</p>
-        </div>
-
-        {/* Tombol Balas */}
-        <button onClick={() => handleReplyToggle(comment.id)}>Balas</button>
-
-        {/* Input Balasan */}
-        {replyInputs.hasOwnProperty(comment.id) && (
-          <div className="reply-input">
-            <input
-              type="text"
-              placeholder="Tulis balasan..."
-              value={replyInputs[comment.id]}
-              onChange={(e) => handleReplyInputChange(e, comment.id)}
-            />
-            <button onClick={() => handleReplySubmit(comment.id)}>Kirim</button>
-          </div>
-        )}
-
-        {/* Render nested replies */}
-        {comment.replies && comment.replies.length > 0 && (
-          <div className="replies">{renderComments(comment.replies, depth + 1)}</div>
-        )}
-      </div>
-    ));
+  const toggleReplies = (commentId) => {
+    setShowReplies(prev => ({
+      ...prev,
+      [commentId]: !prev[commentId]
+    }));
   };
+
+  // ✅ Jangan tampilkan kalau role admin/author
+  if (role === "admin" || role === "author") {
+    return null;
+  }
 
   return (
     <div className="comment-section">
       <h3>Komentar</h3>
 
-      {/* Input komentar utama */}
       <div className="comment-input">
         <textarea
           placeholder="Tulis komentar..."
@@ -127,8 +110,84 @@ function CommentSection({ newsId, userId }) {
         <button onClick={handleCommentSubmit}>Kirim</button>
       </div>
 
-      {/* Komentar Nested */}
-      <div className="comments-list">{renderComments(comments)}</div>
+      <div className="comments-list">
+        {comments.map(comment => (
+          <div key={comment.id} className="comment-item">
+            <div className="comment-header">
+              <img src={comment.profileImage} alt={comment.username} />
+              <div>
+                <strong>{comment.username}</strong>
+                <p>{comment.commentText}</p>
+              </div>
+            </div>
+            <div className="comment-reactions">
+              <button onClick={() => reactToComment(comment.id, "like", fetchComments)}>👍 {comment.likes || 0}</button>
+              <button onClick={() => reactToComment(comment.id, "dislike", fetchComments)}>👎 {comment.dislikes || 0}</button>
+              <button onClick={() => handleReplyToggle(comment.id)}>💬 Balas</button>
+              <ReportButton userId={userId} targetType="comment" targetId={comment.id} />
+            </div>
+
+            {replyInputs[comment.id] !== undefined && (
+              <div className="reply-input">
+                <input
+                  type="text"
+                  placeholder="Tulis balasan..."
+                  value={replyInputs[comment.id] || ""}
+                  onChange={(e) => handleReplyInputChange(e, comment.id)}
+                />
+                <button onClick={() => handleReplySubmit(comment.id)}>Kirim</button>
+              </div>
+            )}
+
+            {repliesMap[comment.id] && !showReplies[comment.id] && (
+              <div className="toggle-replies">
+                <button onClick={() => toggleReplies(comment.id)}>
+                  Lihat {repliesMap[comment.id].length} balasan
+                </button>
+              </div>
+            )}
+
+            {showReplies[comment.id] && (
+              <div className="reply-box">
+                {repliesMap[comment.id]?.map(reply => (
+                  <div key={reply.id} className="comment-item reply">
+                    <div className="comment-header">
+                      <img src={reply.profileImage} alt={reply.username} />
+                      <div>
+                        <strong>{reply.username}</strong>
+                        <p>
+                          <span className="reply-arrow">↪ <strong>{comment.username}</strong> </span>
+                          {reply.commentText}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="comment-reactions">
+                      <button onClick={() => reactToComment(reply.id, "like", fetchComments)}>👍 {reply.likes || 0}</button>
+                      <button onClick={() => reactToComment(reply.id, "dislike", fetchComments)}>👎 {reply.dislikes || 0}</button>
+                      <button onClick={() => handleReplyToggle(reply.id)}>💬 Balas</button>
+                      <ReportButton userId={userId} targetType="comment" targetId={reply.id} />
+                    </div>
+                    {replyInputs[reply.id] !== undefined && (
+                      <div className="reply-input">
+                        <input
+                          type="text"
+                          placeholder="Tulis balasan..."
+                          value={replyInputs[reply.id] || ""}
+                          onChange={(e) => handleReplyInputChange(e, reply.id)}
+                        />
+                        <button onClick={() => handleReplySubmit(reply.id)}>Kirim</button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+                <div className="toggle-replies">
+                  <button onClick={() => toggleReplies(comment.id)}>Sembunyikan balasan</button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

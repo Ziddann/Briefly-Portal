@@ -1,5 +1,5 @@
 import React from 'react';
-import '../../styles/Settings.css';
+import './Styles/Settings.css';
 
 function SecuritySettings({ onClose }) {
   return (

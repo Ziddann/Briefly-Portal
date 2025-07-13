@@ -81,7 +81,17 @@ function KategoriSection() {
                   <span className="tag">{item.category.toUpperCase()}</span>
                   <h4>{item.title}</h4>
                   <p className="desc">{item.description}</p>
-                  <p className="date">{item.date}</p>
+                  <p className="date">
+  {new Date(item.date).toLocaleString("id-ID", {
+    timeZone: "Asia/Jakarta",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: '2-digit',
+    minute: '2-digit'
+  })}
+</p>
+
                   <Link to={`/news/${item.id}`} className="read-more">Baca Selengkapnya</Link>
                 </div>
               </div>

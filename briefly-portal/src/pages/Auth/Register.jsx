@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../styles/Register.css';
+import LoadingOverlay from '../../components/LoadingOverlay';
+import { useNotification } from '../../components/Notification'; // ✅
+import './styles/Register.css';
 
 function Register() {
   const [form, setForm] = useState({
     name: '',
     email: '',
-    phone: '',
     password: '',
     confirmPassword: '',
     agree: false,
-    subscribe: true,
   });
 
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { showNotification } = useNotification(); // ✅
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -27,14 +29,16 @@ function Register() {
     e.preventDefault();
 
     if (!form.agree) {
-      alert('Anda harus menyetujui Syarat & Ketentuan!');
+      showNotification('Anda harus menyetujui Syarat & Ketentuan!', 'error');
       return;
     }
 
     if (form.password !== form.confirmPassword) {
-      alert('Password tidak cocok!');
+      showNotification('Password tidak cocok!', 'error');
       return;
     }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch('http://localhost:5000/api/register', {
@@ -43,25 +47,31 @@ function Register() {
         body: JSON.stringify({
           name: form.name,
           email: form.email,
-          phone: form.phone,
           password: form.password,
-          role: 'reader', 
+          role: 'reader',
         }),
       });
 
       const data = await response.json();
+
       if (data.message) {
-        alert('Pendaftaran berhasil! Silahkan login.');
-        navigate('/login');
+        showNotification('Registrasi berhasil! Silakan login.', 'success');
+        setTimeout(() => navigate('/login'), 1500);
+      } else {
+        showNotification('Pendaftaran gagal. Coba lagi.', 'error');
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Registration error:', error);
-      alert('Pendaftaran gagal!');
+      showNotification('Terjadi kesalahan saat mendaftar.', 'error');
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="register-container">
+      <LoadingOverlay isLoading={isLoading} />
+
       <form className="register-box" onSubmit={handleSubmit}>
         <div className="register-icon-logo">📰</div>
         <h1 className="register-title">NewsPortal</h1>
@@ -84,15 +94,6 @@ function Register() {
           name="email"
           placeholder="nama@email.com"
           value={form.email}
-          onChange={handleChange}
-          required
-          className="register-input"
-        />
-        <input
-          type="tel"
-          name="phone"
-          placeholder="+62 812 3456 7890"
-          value={form.phone}
           onChange={handleChange}
           required
           className="register-input"
@@ -122,28 +123,18 @@ function Register() {
             name="agree"
             checked={form.agree}
             onChange={handleChange}
+            id="agree"
           />
-          <span>
+          <label htmlFor="agree">
             Saya setuju dengan <a href="#">Syarat & Ketentuan</a> dan <a href="#">Kebijakan Privasi</a>
-          </span>
+          </label>
         </div>
 
-        <div className="register-checkbox-group">
-          <input
-            type="checkbox"
-            name="subscribe"
-            checked={form.subscribe}
-            onChange={handleChange}
-          />
-          <span>Saya ingin menerima newsletter dan update berita terbaru</span>
-        </div>
-
-        <button type="submit" className="register-button">Daftar Sekarang</button>
+        <button type="submit" className="register-button" disabled={isLoading}>
+          Daftar Sekarang
+        </button>
 
         <div className="register-divider">atau</div>
-
-        <button type="button" className="register-google-btn">Daftar dengan Google</button>
-        <button type="button" className="register-facebook-btn">Daftar dengan Facebook</button>
 
         <p className="register-login-link">
           Sudah punya akun? <Link to="/login">Masuk di sini</Link>

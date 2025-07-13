@@ -1,12 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "./Styles/NewsSection.css"
-import { estimateReadTime } from "./hook/utils"; // Pastikan path benar
+import "./Styles/NewsSection.css";
+import ReportButton from "../../components/ReportButton";
+import { estimateReadTime } from "./hook/utils";
+import { useNewsAction } from "./hook/useNewsActions";
 
 const NewsSection = ({ newsId }) => {
   const [news, setNews] = useState(null);
+  const [role, setRole] = useState("");
+
+  const userId = sessionStorage.getItem("userId") || localStorage.getItem("userId");
+
+  const {
+    isLiked,
+    likeCount,
+    isBookmarked,
+    fetchNewsStatus,
+    toggleLike,
+    toggleBookmark,
+  } = useNewsAction(newsId, userId);
 
   useEffect(() => {
+    const storedRole = sessionStorage.getItem("role") || localStorage.getItem("role");
+    if (storedRole) setRole(storedRole);
+
     const fetchNews = async () => {
       try {
         const res = await axios.get(`http://localhost:5000/api/news/${newsId}`);
@@ -17,7 +34,22 @@ const NewsSection = ({ newsId }) => {
     };
 
     fetchNews();
-  }, [newsId]);
+    if (newsId && userId) fetchNewsStatus();
+  }, [newsId, userId, fetchNewsStatus]);
+
+  useEffect(() => {
+    const recordView = async () => {
+      if (!newsId || !userId) return;
+
+      try {
+        await axios.post(`http://localhost:5000/api/news/${newsId}/view`, { userId });
+      } catch (err) {
+        console.error("Gagal merekam view:", err);
+      }
+    };
+
+    recordView();
+  }, [newsId, userId]);
 
   if (!news) return <p>Memuat detail berita...</p>;
 
@@ -48,7 +80,7 @@ const NewsSection = ({ newsId }) => {
         <span className="dot">•</span>
         <span>{readTime} menit baca</span>
         <span className="dot">•</span>
-        <span>{news.likes} suka</span>
+        <span>{likeCount} suka</span>
       </div>
 
       {/* Judul */}
@@ -75,6 +107,19 @@ const NewsSection = ({ newsId }) => {
       <div className="news-content">
         <p className="intro">{news.description || "Konten belum tersedia."}</p>
       </div>
+
+      {/* Tombol Aksi - hanya jika bukan admin/author */}
+      {role !== "admin" && role !== "author" && (
+        <div className="action-buttons">
+          <button onClick={toggleLike}>
+            {isLiked ? "💖 Disukai" : "👍 Suka"}
+          </button>
+          <button onClick={toggleBookmark}>
+            {isBookmarked ? "🔖 Disimpan" : "🔖 Simpan"}
+          </button>
+          <ReportButton userId={userId} targetType="news" targetId={newsId} />
+        </div>
+      )}
 
       <hr className="divider" />
     </div>

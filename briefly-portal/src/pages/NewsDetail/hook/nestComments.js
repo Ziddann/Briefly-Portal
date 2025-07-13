@@ -1,19 +1,23 @@
-export const nestComments = (comments) => {
-    const map = {};
-    const roots = [];
+export function nestComments(comments) {
+    const commentMap = {};
+    const nested = [];
   
-    comments.forEach((comment) => {
-      map[comment.id] = { ...comment, replies: [] };
+    comments.forEach(comment => {
+      comment.replies = [];
+      commentMap[comment.id] = comment;
     });
   
-    comments.forEach((comment) => {
+    comments.forEach(comment => {
       if (comment.parentId) {
-        map[comment.parentId]?.replies.push(map[comment.id]);
+        const parent = commentMap[comment.parentId];
+        if (parent) {
+          parent.replies.push(comment);
+        }
       } else {
-        roots.push(map[comment.id]);
+        nested.push(comment);
       }
     });
   
-    return roots;
-  };
+    return nested;
+  }
   

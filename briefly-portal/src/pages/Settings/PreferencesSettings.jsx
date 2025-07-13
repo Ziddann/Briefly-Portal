@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../styles/Settings.css';
+import './Styles/Settings.css';
 
 function PreferencesSettings({ onClose }) {
   // Menyimpan state untuk tema dan bahasa

@@ -1,4 +1,6 @@
+// components/BeritaTerbaru.jsx
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import './Styles/BeritaTerbaru.css';
 
 const BeritaTerbaru = () => {
@@ -8,7 +10,6 @@ const BeritaTerbaru = () => {
     fetch('http://localhost:5000/api/news')
       .then((response) => response.json())
       .then((data) => {
-        // Urutkan berdasarkan id terbaru (paling besar) ke awal
         const sortedData = data.sort((a, b) => b.id - a.id);
         setNewsList(sortedData);
       })
@@ -19,22 +20,22 @@ const BeritaTerbaru = () => {
     <div className="berita-container">
       <div className="berita-header">
         <h2>Berita Terbaru</h2>
-        <a href="#" className="lihat-semua">Lihat Semua</a>
+        <a href="/berita" className="lihat-semua">Lihat Semua</a>
       </div>
       <div className="berita-grid">
         {newsList.slice(0, 3).map((news) => (
-          <div className="berita-card" key={news.id}>
+          <Link to={`/news/${news.id}`} key={news.id} className="berita-card">
             <img src={news.imageUrl} alt={news.title} className="berita-img" />
             <div className="berita-content">
               <div className="berita-meta">
-                <span className="berita-tag">Berita</span>
-                <span className="berita-time">{new Date(news.date).toLocaleDateString()}</span>
+                <span className="berita-tag">{news.category || 'Berita'}</span>
+                <span className="berita-time">{new Date(news.date).toLocaleDateString('id-ID')}</span>
               </div>
               <h3 className="berita-title">{news.title}</h3>
               <p className="berita-desc">{news.description}</p>
               <div className="berita-author">Admin</div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>
