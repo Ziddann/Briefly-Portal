@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from './Sidebar';
-import '../styles/Navbar.css';
-import '../styles/Sidebar.css';
+import SearchBar from './SearchBar';
+import { useNotification } from './notification';
+import LoadingOverlay from './LoadingOverlay';
+import './Styles/Navbar.css';
+import './Styles/Sidebar.css';
 
 function Navbar({ onSearch }) {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -13,12 +16,14 @@ function Navbar({ onSearch }) {
   const [role, setRole] = useState('');
   const [userName, setUserName] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { showNotification } = useNotification();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const userId = localStorage.getItem('userId');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const userId = localStorage.getItem('userId') || sessionStorage.getItem('userId');
 
     if (!token || !userId) {
       setIsLoggedIn(false);
@@ -30,7 +35,7 @@ function Navbar({ onSearch }) {
     fetch(`http://localhost:5000/api/users/${userId}`)
       .then(res => res.json())
       .then(data => {
-        const imageUrl = data.profileImage 
+        const imageUrl = data.profileImage
           ? `http://localhost:5000${data.profileImage}`
           : `http://localhost:5000/default-avatar.jpg`;
 
@@ -52,14 +57,20 @@ function Navbar({ onSearch }) {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userId');
-    setIsLoggedIn(false);
-    setProfileImage('http://localhost:5000/default-avatar.jpg');
-    setUserName('');
-    setRole('');
-    navigate('/');
-    alert('Logout berhasil!');
+    setIsLoading(true);
+
+    setTimeout(() => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      sessionStorage.clear();
+      setIsLoggedIn(false);
+      setProfileImage('http://localhost:5000/default-avatar.jpg');
+      setUserName('');
+      setRole('');
+      navigate('/');
+      showNotification('Logout berhasil!', 'success');
+      setIsLoading(false);
+    }, 1000);
   };
 
   const toggleDropdown = () => {
@@ -79,6 +90,8 @@ function Navbar({ onSearch }) {
 
   return (
     <>
+      <LoadingOverlay isLoading={isLoading} />
+
       <nav className="navbar">
         <div className="navbar-left">
           {isLoggedIn && (
@@ -92,15 +105,9 @@ function Navbar({ onSearch }) {
         </div>
 
         <div className="navbar-right">
-          {isLoggedIn && (
+          {isLoggedIn ? (
             <>
-              <input
-                type="text"
-                className="search-input"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={handleSearchChange}
-              />
+              <SearchBar />
 
               <Link to="/" className="nav-item" onClick={scrollToTop}>
                 Home
@@ -110,7 +117,7 @@ function Navbar({ onSearch }) {
                 <Link to="/admin/dashboard" className="nav-item">Admin Dashboard</Link>
               )}
               {role === 'author' && (
-                <Link to="/create-news" className="nav-item">Create News</Link>
+                <Link to="/author/dashboard" className="nav-item">Author Dashboard</Link>
               )}
               {role === 'reader' && (
                 <Link to="/bookmark" className="nav-item">Bookmark</Link>
@@ -118,7 +125,6 @@ function Navbar({ onSearch }) {
 
               <div className="dropdown user-dropdown" onClick={toggleUserDropdown}>
                 <img src={profileImage} alt="👤" className="avatar-img" />
-                {/* <span className="user-name">{userName}</span> */}
                 {userDropdownOpen && (
                   <div className="dropdown-menu">
                     <Link to="/profile" className="dropdown-item">Profile</Link>
@@ -127,9 +133,7 @@ function Navbar({ onSearch }) {
                 )}
               </div>
             </>
-          )}
-
-          {!isLoggedIn && (
+          ) : (
             <>
               <Link to="/login" className="nav-item">Login</Link>
               <Link to="/register" className="nav-item">Register</Link>

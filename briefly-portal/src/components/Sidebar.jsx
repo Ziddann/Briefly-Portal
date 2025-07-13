@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import AccountSettings from '../pages/Settings/AccountSettings';
 import PreferencesSettings from '../pages/Settings/PreferencesSettings';
 import SecuritySettings from '../pages/Settings/SecuritySettings';
-import '../styles/Sidebar.css';
-import '../styles/Settings.css';
+import './Styles/Sidebar.css';
+import '../pages/Settings/Styles/Settings.css';
 
 function Sidebar({ onClose }) {
   const [popup, setPopup] = useState(null);
