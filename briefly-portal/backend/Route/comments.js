@@ -23,71 +23,52 @@ router.post('/comments', async (req, res) => {
   }
 });
 
+// Balas Komentar
+router.post("/comments/reply", async (req, res) => {
+  const { userId, newsId, commentText, parentId, replyToUser } = req.body;
+
+  try {
+    await pool.query(`
+      INSERT INTO comments (newsId, userId, parentId, commentText, replyToUser, createdAt)
+      VALUES (?, ?, ?, ?, ?, NOW())
+    `, [newsId, userId, parentId || null, commentText, replyToUser || null]);
+
+    res.status(201).json({ message: "Komentar berhasil ditambahkan" });
+  } catch (err) {
+    console.error("Gagal menambahkan komentar:", err);
+    res.status(500).json({ error: "Gagal menambahkan komentar" });
+  }
+});
+
+
 // Ambil Komentar Berdasarkan Berita
 router.get('/comments/:newsId', async (req, res) => {
   const newsId = req.params.newsId;
 
   try {
-    // Komentar utama
-    const [parentComments] = await pool.query(`
-      SELECT c.id, c.commentText, c.createdAt, c.likes, c.dislikes, u.name AS username, u.profileImage
+    const [rows] = await pool.query(`
+      SELECT c.id, c.commentText, c.createdAt, c.parentId, c.likes, c.dislikes,
+             c.replyToUser,
+             u.name AS username, u.profileImage
       FROM comments c
       JOIN users u ON c.userId = u.id
-      WHERE c.newsId = ? AND c.parentId IS NULL
+      WHERE c.newsId = ?
       ORDER BY c.createdAt ASC
     `, [newsId]);
 
-    const formattedParents = parentComments.map(c => ({
+    const comments = rows.map(c => ({
       ...c,
-      profileImage: c.profileImage ? `http://localhost:5000/uploads/${c.profileImage}` : '/default-avatar.png',
-      replies: []
+      id: Number(c.id),
+      parentId: c.parentId !== null ? Number(c.parentId) : null,
+      profileImage: c.profileImage
+        ? `http://localhost:5000/uploads/${c.profileImage}`
+        : '/default-avatar.png'
     }));
 
-    // Balasan komentar
-    const [allReplies] = await pool.query(`
-      SELECT c.id, c.commentText, c.createdAt, c.parentId, c.likes, c.dislikes, u.name AS username, u.profileImage
-      FROM comments c
-      JOIN users u ON c.userId = u.id
-      WHERE c.newsId = ? AND c.parentId IS NOT NULL
-      ORDER BY c.createdAt ASC
-    `, [newsId]);
-
-    allReplies.forEach(reply => {
-      const parent = formattedParents.find(p => p.id === reply.parentId);
-      if (parent) {
-        parent.replies.push({
-          id: reply.id,
-          commentText: reply.commentText,
-          createdAt: reply.createdAt,
-          username: reply.username,
-          profileImage: reply.profileImage ? `http://localhost:5000/uploads/${reply.profileImage}` : '/default-avatar.png'
-        });
-      }
-    });
-
-    res.status(200).json(formattedParents);
-
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ message: 'Failed to fetch comments' });
-  }
-});
-
-// Balas Komentar
-router.post("/comments/reply", async (req, res) => {
-  const { userId, newsId, parentId, commentText } = req.body;
-  if (!userId || !newsId || !parentId || !commentText)
-    return res.status(400).json({ message: "Data tidak lengkap" });
-
-  try {
-    await pool.query(
-      "INSERT INTO comments (newsId, userId, parentId, commentText, createdAt) VALUES (?, ?, ?, ?, NOW())",
-      [newsId, userId, parentId, commentText]
-    );
-    res.json({ success: true });
+    res.json(comments);
   } catch (err) {
-    console.error("Error saat balas komentar:", err);
-    res.status(500).json({ error: "Gagal membalas komentar" });
+    console.error(err);
+    res.status(500).json({ error: "Gagal ambil komentar" });
   }
 });
 

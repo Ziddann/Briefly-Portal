@@ -99,5 +99,24 @@ router.get('/bookmarks/:userId', async (req, res) => {
     }
   });
   
+  router.post("/reports", async (req, res) => {
+    const { reporterId, targetType, targetId, reason, note } = req.body;
+  
+    try {
+      await pool.query(
+        `INSERT INTO reports (reporterId, targetType, targetId, reason, note) VALUES (?, ?, ?, ?, ?)`,
+        [reporterId, targetType, targetId, reason, note || null]
+      );
+      res.status(201).json({ message: "Laporan berhasil dikirim" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Gagal mengirim laporan" });
+    }
+  });
+  
+
+
+
+
 
 module.exports = router;
