@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import '../../styles/AdminDashboard.css';
+import './Styles/ContentManagement.css';
+import { useNotification } from '../../components/notification';
+import LoadingOverlay from '../../components/LoadingOverlay';
 
 function ContentManagement() {
   const [newsList, setNewsList] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [showAll, setShowAll] = useState(false); // Tampilkan semua (Draft & Published)
+  const [showAll, setShowAll] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const { showNotification } = useNotification();
 
   const [editForm, setEditForm] = useState({
     id: null,
@@ -21,7 +26,7 @@ function ContentManagement() {
   }, []);
 
   const fetchNews = () => {
-    fetch('http://localhost:5000/api/news')
+    fetch('http://localhost:5000/api/admin/news/all')
       .then(res => res.json())
       .then(data => setNewsList(data))
       .catch(err => console.error("Error fetching news:", err));
@@ -48,44 +53,61 @@ function ContentManagement() {
     setEditForm({ ...editForm, [e.target.name]: e.target.value });
   };
 
-  const handleEditSubmit = () => {
-    fetch(`http://localhost:5000/api/news/${editForm.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(editForm),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          fetchNews();
-          closeModal();
-          alert('Berita berhasil diupdate!');
-        }
-      })
-      .catch(err => console.error("Error updating news:", err));
+  const handleEditSubmit = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/news/${editForm.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editForm),
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchNews();
+        closeModal();
+        showNotification("Berita berhasil diupdate!", "success");
+      } else {
+        showNotification("Gagal update berita!", "error");
+      }
+    } catch (err) {
+      console.error("Error updating news:", err);
+      showNotification("Terjadi kesalahan saat update", "error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Yakin mau hapus berita ini?")) {
-      fetch(`http://localhost:5000/api/news/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setNewsList(newsList.filter(news => news.id !== id));
-            alert("Berita berhasil dihapus");
-          }
-        })
-        .catch(err => console.error("Error deleting news:", err));
+  const handleDelete = async (id) => {
+    const confirm = window.confirm("Yakin mau hapus berita ini?");
+    if (!confirm) return;
+
+    setIsLoading(true);
+    try {
+      const res = await fetch(`http://localhost:5000/api/admin/news/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        setNewsList(newsList.filter(news => news.id !== id));
+        showNotification("Berita berhasil dihapus", "success");
+      } else {
+        showNotification("Gagal menghapus berita", "error");
+      }
+    } catch (err) {
+      console.error("Error deleting news:", err);
+      showNotification("Terjadi kesalahan saat menghapus", "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="content-management">
+      <LoadingOverlay isLoading={isLoading} />
+
       <h3>Content Management</h3>
 
       <div style={{ marginBottom: '15px' }}>
         <button onClick={() => setShowAll(!showAll)}>
-          {showAll ? 'Sembunyikan Draft' : 'Tampilkan Semua'}
+          {showAll ? 'Sembunyikan Published' : 'Tampilkan Semua'}
         </button>
       </div>
 
@@ -103,13 +125,13 @@ function ContentManagement() {
         <tbody>
           {newsList.length > 0 ? (
             newsList
-              .filter(news => showAll || news.status !== 'Draft')
+              .filter(news => showAll || news.status.toLowerCase() === 'draft')
               .map((news) => (
                 <tr key={news.id}>
                   <td>{news.title}</td>
                   <td>{news.authorName || '-'}</td>
                   <td>{news.category || '-'}</td>
-                  <td>{news.status || 'Draft'}</td>
+                  <td>{news.status || 'Published'}</td>
                   <td>
                     {news.imageUrl ? (
                       <img src={news.imageUrl} alt="Thumbnail" width="50" />
@@ -131,7 +153,6 @@ function ContentManagement() {
         </tbody>
       </table>
 
-      {/* Modal Form */}
       {showModal && (
         <div className="modal-overlay">
           <div className="modal">

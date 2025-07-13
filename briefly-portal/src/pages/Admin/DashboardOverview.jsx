@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import '../../styles/AdminDashboard.css';
+import { Link } from 'react-router-dom';
+import './Styles/DashboardOverview.css'
 
 function DashboardOverview() {
   const [stats, setStats] = useState({
@@ -11,7 +12,7 @@ function DashboardOverview() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/stats');
+      const res = await fetch('http://localhost:5000/api/admin/stats');
       const data = await res.json();
       setStats(data);
     } catch (err) {
@@ -45,10 +46,11 @@ function DashboardOverview() {
         </div>
       </div>
       <div className="quick-actions">
-        <button className="quick-action-btn">New Article</button>
-        <button className="quick-action-btn">Add User</button>
-        <button className="quick-action-btn">New Category</button>
-        <button className="quick-action-btn">View Reports</button>
+      <Link to="/admin/create-news" className="quick-action-btn">
+  New Article
+</Link>
+        <button className="quick-action-btn">Add Role</button>
+        <Link to="/admin/reports" className="quick-action-btn">View Reports</Link>
       </div>
     </div>
   );

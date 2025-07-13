@@ -1,10 +1,10 @@
 import React from 'react';
 import AdminSidebar from './AdminSidebar';
 import DashboardOverview from './DashboardOverview';
-import RecentArticles from './RecentArticles';
+import RecentReports from './RecentReports';
+import NewsApproval from './NewsApproval';
 import ContentManagement from './ContentManagement';
-import '../../styles/AdminDashboard.css';  // Impor CSS terpusat di AdminDashboard.jsx
-
+import './Styles/AdminDashboard.css';
 
 function AdminDashboard() {
   return (
@@ -12,7 +12,9 @@ function AdminDashboard() {
       <AdminSidebar />
       <div className="admin-dashboard-content">
         <DashboardOverview />
-        <RecentArticles />
+        <RecentReports limit={4} />
+
+        <NewsApproval />
         <ContentManagement />
       </div>
     </div>
