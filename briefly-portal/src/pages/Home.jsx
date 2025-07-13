@@ -3,10 +3,10 @@ import Navbar from '../components/Navbar';
 import TrendingSection from './NewsComponent/TrendingSection';
 import KategoriSection from './NewsComponent/KategoriSection';
 import BeritaTerbaru from './NewsComponent/BeritaTerbaru';
-import NewsCard from '../components/NewsCard';
+import NewsCard from './NewsComponent/NewsCard';
 import Footer from '../components/Footer';
 
-import '../styles/Home.css'
+import './Home.css'
 
 const Home = () => {
   return (
